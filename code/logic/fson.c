@@ -553,30 +553,124 @@ fossil_media_fson_value_t *fossil_media_fson_parse(const char *json_text, fossil
                                         }
                                     } else {
                                         char buf[128] = {0};
-                                        if (item->type == FSON_TYPE_CSTR && item->u.cstr) {
-                                            strncpy(buf, item->u.cstr, sizeof(buf) - 1);
-                                        } else if (item->type == FSON_TYPE_I32) {
-                                            snprintf(buf, sizeof(buf), "%d", item->u.i32);
-                                        } else if (item->type == FSON_TYPE_I64) {
-                                            snprintf(buf, sizeof(buf), "%lld", (long long)item->u.i64);
-                                        } else if (item->type == FSON_TYPE_BOOL) {
-                                            snprintf(buf, sizeof(buf), "%s", item->u.boolean ? "true" : "false");
+                                        
+                                        switch (item->type) {
+                                            case FSON_TYPE_NULL:
+                                                snprintf(buf, sizeof(buf), "null");
+                                                break;
+                                            case FSON_TYPE_BOOL:
+                                                snprintf(buf, sizeof(buf), "%s", item->u.boolean ? "true" : "false");
+                                                break;
+                                        
+                                            /* Signed integers */
+                                            case FSON_TYPE_I8:  snprintf(buf, sizeof(buf), "%" PRId8,  item->u.i8);  break;
+                                            case FSON_TYPE_I16: snprintf(buf, sizeof(buf), "%" PRId16, item->u.i16); break;
+                                            case FSON_TYPE_I32: snprintf(buf, sizeof(buf), "%" PRId32, item->u.i32); break;
+                                            case FSON_TYPE_I64: snprintf(buf, sizeof(buf), "%" PRId64, item->u.i64); break;
+                                        
+                                            /* Unsigned integers */
+                                            case FSON_TYPE_U8:  snprintf(buf, sizeof(buf), "%" PRIu8,  item->u.u8);  break;
+                                            case FSON_TYPE_U16: snprintf(buf, sizeof(buf), "%" PRIu16, item->u.u16); break;
+                                            case FSON_TYPE_U32: snprintf(buf, sizeof(buf), "%" PRIu32, item->u.u32); break;
+                                            case FSON_TYPE_U64: snprintf(buf, sizeof(buf), "%" PRIu64, item->u.u64); break;
+                                        
+                                            /* Floating point */
+                                            case FSON_TYPE_F32: snprintf(buf, sizeof(buf), "%g", (double)item->u.f32); break;
+                                            case FSON_TYPE_F64: snprintf(buf, sizeof(buf), "%g", item->u.f64); break;
+                                        
+                                            /* Encoded numbers */
+                                            case FSON_TYPE_OCT: snprintf(buf, sizeof(buf), "0%" PRIo64, (uint64_t)item->u.oct); break;
+                                            case FSON_TYPE_HEX: snprintf(buf, sizeof(buf), "0x%" PRIx64, (uint64_t)item->u.hex); break;
+                                            case FSON_TYPE_BIN: {
+                                                uint64_t val = item->u.bin;
+                                                char tmp[65];
+                                                int pos = 64;
+                                                tmp[pos] = '\0';
+                                                do {
+                                                    tmp[--pos] = (val & 1) ? '1' : '0';
+                                                    val >>= 1;
+                                                } while (val && pos > 0);
+                                                snprintf(buf, sizeof(buf), "0b%s", &tmp[pos]);
+                                                break;
+                                            }
+                                        
+                                            /* Character & string */
+                                            case FSON_TYPE_CHAR:
+                                                snprintf(buf, sizeof(buf), "%c", item->u.character);
+                                                break;
+                                            case FSON_TYPE_CSTR:
+                                                if (item->u.cstr)
+                                                    snprintf(buf, sizeof(buf), "%.*s", (int)(sizeof(buf) - 1), item->u.cstr);
+                                                break;
+                                        
+                                            /* Enum */
+                                            case FSON_TYPE_ENUM:
+                                                if (item->u.enum_val.symbol)
+                                                    snprintf(buf, sizeof(buf), "%.*s", (int)(sizeof(buf) - 1), item->u.enum_val.symbol);
+                                                break;
+                                        
+                                            /* ISO 8601 datetime formatting */
+                                            case FSON_TYPE_DATETIME: {
+                                                int64_t sec = item->u.datetime.epoch_ns / 1000000000LL;
+                                                int64_t nsec = item->u.datetime.epoch_ns % 1000000000LL;
+                                        
+                                                struct tm tm_utc;
+                                                gmtime_r(&sec, &tm_utc);
+                                        
+                                                /* Format base time (YYYY-MM-DDTHH:MM:SS) */
+                                                size_t len = strftime(buf, sizeof(buf), "%Y-%m-%dT%H:%M:%S", &tm_utc);
+                                        
+                                                /* Append fractional seconds if needed */
+                                                if (len < sizeof(buf) && nsec > 0) {
+                                                    int used = snprintf(buf + len, sizeof(buf) - len, ".%09lld", (long long)nsec);
+                                                    len += (used > 0) ? used : 0;
+                                                }
+                                        
+                                                /* Append 'Z' to indicate UTC */
+                                                if (len < sizeof(buf)) {
+                                                    snprintf(buf + len, sizeof(buf) - len, "Z");
+                                                }
+                                                break;
+                                            }
+                                        
+                                            /* Duration as human-readable string */
+                                            case FSON_TYPE_DURATION: {
+                                                int64_t ns = item->u.duration.ns;
+                                                if (ns % 1000000000LL == 0) {
+                                                    snprintf(buf, sizeof(buf), "%llds", (long long)(ns / 1000000000LL));
+                                                } else if (ns % 1000000LL == 0) {
+                                                    snprintf(buf, sizeof(buf), "%lldms", (long long)(ns / 1000000LL));
+                                                } else if (ns % 1000LL == 0) {
+                                                    snprintf(buf, sizeof(buf), "%lldus", (long long)(ns / 1000LL));
+                                                } else {
+                                                    snprintf(buf, sizeof(buf), "%lldns", (long long)ns);
+                                                }
+                                                break;
+                                            }
+                                        
+                                            /* Containers just report count */
+                                            case FSON_TYPE_ARRAY:
+                                                snprintf(buf, sizeof(buf), "[array of %zu items]", item->u.array.count);
+                                                break;
+                                            case FSON_TYPE_OBJECT:
+                                                snprintf(buf, sizeof(buf), "{object with %zu keys}", item->u.object.count);
+                                                break;
+                                        
+                                            default:
+                                                snprintf(buf, sizeof(buf), "<unknown>");
+                                                break;
                                         }
                                         
                                         if (buf[0]) {
                                             char fake_fson[256];
                                             size_t written = snprintf(fake_fson, sizeof(fake_fson),
-                                                                      "x:%.100s: %.100s",  // precision specifiers ensure truncation
+                                                                      "x:%.100s: %.100s",
                                                                       elem_type ? elem_type : "",
                                                                       buf);
-                                        
-                                            // Ensure null termination (snprintf always null-terminates if size > 0)
                                             fake_fson[sizeof(fake_fson) - 1] = '\0';
-                                        
                                             if (written >= sizeof(fake_fson)) {
-                                                // Truncation occurred, you can optionally log a warning here
+                                                /* Optional: log truncation */
                                             }
-                                        
                                             converted = fossil_media_fson_parse(fake_fson, NULL);
                                         }
                                     }
