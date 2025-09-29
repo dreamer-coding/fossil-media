@@ -514,7 +514,8 @@ fossil_media_fson_value_t *fossil_media_fson_parse(const char *json_text, fossil
                                     }
                                     char fake_key[8] = "x";
                                     char fake_type[40];
-                                    snprintf(fake_type, sizeof(fake_type), "%s", elem_type);
+                                    strncpy(fake_type, elem_type, sizeof(fake_type) - 1);
+                                    fake_type[sizeof(fake_type) - 1] = '\0';
                                     char fake_fson[128];
                                     snprintf(fake_fson, sizeof(fake_fson), "%s:%s: %s", fake_key, fake_type, buf);
                                     converted = fossil_media_fson_parse(fake_fson, NULL);
