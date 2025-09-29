@@ -552,7 +552,6 @@ fossil_media_fson_value_t *fossil_media_fson_parse(const char *json_text, fossil
                                             converted = fossil_media_fson_clone(item);
                                         }
                                     } else {
-                                        // Fallback: try to parse as the requested type
                                         char buf[128] = {0};
                                         if (item->type == FSON_TYPE_CSTR && item->u.cstr) {
                                             strncpy(buf, item->u.cstr, sizeof(buf) - 1);
@@ -563,16 +562,21 @@ fossil_media_fson_value_t *fossil_media_fson_parse(const char *json_text, fossil
                                         } else if (item->type == FSON_TYPE_BOOL) {
                                             snprintf(buf, sizeof(buf), "%s", item->u.boolean ? "true" : "false");
                                         }
+                                        
                                         if (buf[0]) {
                                             char fake_fson[256];
-                                            // Truncate elem_type and buf if needed to avoid overflow
-                                            size_t max_elem = 100, max_buf = 100;
-                                            char elem_trunc[128], buf_trunc[128];
-                                            strncpy(elem_trunc, elem_type, max_elem);
-                                            elem_trunc[max_elem] = '\0';
-                                            strncpy(buf_trunc, buf, max_buf);
-                                            buf_trunc[max_buf] = '\0';
-                                            snprintf(fake_fson, sizeof(fake_fson), "x:%s: %s", elem_trunc, buf_trunc);
+                                            size_t written = snprintf(fake_fson, sizeof(fake_fson),
+                                                                      "x:%.100s: %.100s",  // precision specifiers ensure truncation
+                                                                      elem_type ? elem_type : "",
+                                                                      buf);
+                                        
+                                            // Ensure null termination (snprintf always null-terminates if size > 0)
+                                            fake_fson[sizeof(fake_fson) - 1] = '\0';
+                                        
+                                            if (written >= sizeof(fake_fson)) {
+                                                // Truncation occurred, you can optionally log a warning here
+                                            }
+                                        
                                             converted = fossil_media_fson_parse(fake_fson, NULL);
                                         }
                                     }
