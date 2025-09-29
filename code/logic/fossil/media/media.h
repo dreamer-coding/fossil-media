@@ -25,6 +25,8 @@
 #ifndef FOSSIL_MEDIA_CORE_H
 #define FOSSIL_MEDIA_CORE_H
 
+#include <time.h>
+#include <inttypes.h>
 #include <stddef.h>
 #include <stdint.h>
 
