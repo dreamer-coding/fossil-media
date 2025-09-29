@@ -611,7 +611,7 @@ fossil_media_fson_value_t *fossil_media_fson_parse(const char *json_text, fossil
                                         
                                             /* ISO 8601 datetime formatting */
                                             case FSON_TYPE_DATETIME: {
-                                                int64_t sec = item->u.datetime.epoch_ns / 1000000000LL;
+                                                time_t sec = (time_t)(item->u.datetime.epoch_ns / 1000000000LL);
                                                 int64_t nsec = item->u.datetime.epoch_ns % 1000000000LL;
                                         
                                                 struct tm tm_utc;
