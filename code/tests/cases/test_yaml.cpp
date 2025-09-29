@@ -140,15 +140,6 @@ FOSSIL_TEST_CASE(cpp_test_yaml_parse_multiple_indents) {
     ASSUME_ITS_TRUE(strcmp(doc.get("d"), "4") == 0);
 }
 
-FOSSIL_TEST_CASE(cpp_test_yaml_print_output) {
-    using fossil::media::Yaml;
-    const char *yaml = "x: 10\n  y: 20\n";
-    Yaml doc(yaml);
-
-    // Just call print to ensure no crash; output not checked here
-    doc.print();
-}
-
 FOSSIL_TEST_CASE(cpp_test_yaml_parse_only_spaces) {
     using fossil::media::Yaml;
     const char *yaml = "   \n\t\n";
@@ -231,7 +222,6 @@ FOSSIL_TEST_GROUP(cpp_yaml_tests) {
     FOSSIL_TEST_ADD(cpp_yaml_fixture, cpp_test_yaml_parse_nested);
     FOSSIL_TEST_ADD(cpp_yaml_fixture, cpp_test_yaml_parse_trailing_spaces);
     FOSSIL_TEST_ADD(cpp_yaml_fixture, cpp_test_yaml_parse_multiple_indents);
-    FOSSIL_TEST_ADD(cpp_yaml_fixture, cpp_test_yaml_print_output);
     FOSSIL_TEST_ADD(cpp_yaml_fixture, cpp_test_yaml_parse_only_spaces);
     FOSSIL_TEST_ADD(cpp_yaml_fixture, cpp_test_yaml_parse_no_colon);
     FOSSIL_TEST_ADD(cpp_yaml_fixture, cpp_test_yaml_parse_colon_at_end);

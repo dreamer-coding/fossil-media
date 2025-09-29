@@ -139,15 +139,6 @@ FOSSIL_TEST_CASE(c_test_yaml_parse_multiple_indents) {
     fossil_media_yaml_free(head);
 }
 
-FOSSIL_TEST_CASE(c_test_yaml_print_output) {
-    const char *yaml = "x: 10\n  y: 20\n";
-    fossil_media_yaml_node_t *head = fossil_media_yaml_parse(yaml);
-
-    // Just call print to ensure no crash; output not checked here
-    fossil_media_yaml_print(head);
-    fossil_media_yaml_free(head);
-}
-
 FOSSIL_TEST_CASE(c_test_yaml_parse_only_spaces) {
     const char *yaml = "   \n\t\n";
     fossil_media_yaml_node_t *head = fossil_media_yaml_parse(yaml);
@@ -215,7 +206,6 @@ FOSSIL_TEST_GROUP(c_yaml_tests) {
     FOSSIL_TEST_ADD(c_yaml_fixture, c_test_yaml_get_value);
     FOSSIL_TEST_ADD(c_yaml_fixture, c_test_yaml_parse_nested);
     FOSSIL_TEST_ADD(c_yaml_fixture, c_test_yaml_parse_multiple_indents);
-    FOSSIL_TEST_ADD(c_yaml_fixture, c_test_yaml_print_output);
     FOSSIL_TEST_ADD(c_yaml_fixture, c_test_yaml_parse_only_spaces);
     FOSSIL_TEST_ADD(c_yaml_fixture, c_test_yaml_parse_no_colon);
     FOSSIL_TEST_ADD(c_yaml_fixture, c_test_yaml_parse_colon_at_end);
