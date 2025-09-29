@@ -327,7 +327,7 @@ fossil_media_fson_value_t *fossil_media_fson_parse(const char *json_text, fossil
                 }
                 // Copy element type, skipping whitespace
                 const char *et_start = lt + 1;
-                const char *et_end = gt - 2;
+                const char *et_end = gt - 1;
                 while (et_start <= et_end && isspace((unsigned char)*et_start)) et_start++;
                 while (et_end >= et_start && isspace((unsigned char)*et_end)) et_end--;
                 size_t et_len = et_end >= et_start ? (size_t)(et_end - et_start + 1) : 0;
@@ -565,7 +565,14 @@ fossil_media_fson_value_t *fossil_media_fson_parse(const char *json_text, fossil
                                         }
                                         if (buf[0]) {
                                             char fake_fson[256];
-                                            snprintf(fake_fson, sizeof(fake_fson), "x:%s: %s", elem_type, buf);
+                                            // Truncate elem_type and buf if needed to avoid overflow
+                                            size_t max_elem = 100, max_buf = 100;
+                                            char elem_trunc[128], buf_trunc[128];
+                                            strncpy(elem_trunc, elem_type, max_elem);
+                                            elem_trunc[max_elem] = '\0';
+                                            strncpy(buf_trunc, buf, max_buf);
+                                            buf_trunc[max_buf] = '\0';
+                                            snprintf(fake_fson, sizeof(fake_fson), "x:%s: %s", elem_trunc, buf_trunc);
                                             converted = fossil_media_fson_parse(fake_fson, NULL);
                                         }
                                     }
