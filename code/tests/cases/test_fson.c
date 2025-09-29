@@ -124,6 +124,30 @@ FOSSIL_TEST_CASE(c_test_fson_parse_array) {
     fossil_media_fson_free(val);
 }
 
+// New test: array with <type> operator
+FOSSIL_TEST_CASE(c_test_fson_parse_array_with_type_operator) {
+    fossil_media_fson_error_t err = {0};
+    const char *json =
+        "{\n"
+        "    arr: array<i32>: [\n"
+        "        1,\n"
+        "        2,\n"
+        "        3\n"
+        "    ]\n"
+        "}";
+    fossil_media_fson_value_t *val = fossil_media_fson_parse(json, &err);
+    ASSUME_NOT_CNULL(val);
+    ASSUME_ITS_EQUAL_CSTR(fossil_media_fson_type_name(val->type), "array");
+    ASSUME_ITS_EQUAL_SIZE(fossil_media_fson_array_size(val), 3);
+    // Check that all elements are i32
+    for (size_t i = 0; i < fossil_media_fson_array_size(val); ++i) {
+        fossil_media_fson_value_t *item = fossil_media_fson_array_get(val, i);
+        ASSUME_NOT_CNULL(item);
+        ASSUME_ITS_EQUAL_CSTR(fossil_media_fson_type_name(item->type), "i32");
+    }
+    fossil_media_fson_free(val);
+}
+
 FOSSIL_TEST_CASE(c_test_fson_parse_object) {
     fossil_media_fson_error_t err = {0};
     const char *json =
