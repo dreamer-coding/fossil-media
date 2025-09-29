@@ -367,6 +367,8 @@ FOSSIL_TEST_GROUP(c_fson_tests) {
     FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_duration);
     FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_invalid_duration);
     FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_complex_nested);
+    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_array_with_type_operator);
+    //
 
     FOSSIL_TEST_REGISTER(c_fson_fixture);
 } // end of tests
