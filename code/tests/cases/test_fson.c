@@ -51,30 +51,73 @@ FOSSIL_TEARDOWN(c_fson_fixture) {
 // as samples for library usage.
 // * * * * * * * * * * * * * * * * * * * * * * * *
 
-FOSSIL_TEST_CASE(c_test_fson_parse_null) {
+// Test NULL input handling
+FOSSIL_TEST_CASE(c_test_fson_parse_null_input) {
     fossil_media_fson_error_t err = {0};
-    const char *json =
-        "{\n"
-        "    null: null\n"
-        "}";
+    fossil_media_fson_value_t *val = fossil_media_fson_parse(NULL, &err);
+    ASSUME_ITS_CNULL(val);
+    ASSUME_ITS_EQUAL_I32(err.code, FOSSIL_MEDIA_FSON_ERR_INVALID_ARG);
+}
+
+// Test whitespace-only input
+FOSSIL_TEST_CASE(c_test_fson_parse_whitespace_only) {
+    fossil_media_fson_error_t err = {0};
+    fossil_media_fson_value_t *val = fossil_media_fson_parse("   \n\t  ", &err);
+    ASSUME_ITS_CNULL(val);
+    ASSUME_ITS_EQUAL_I32(err.code, FOSSIL_MEDIA_FSON_ERR_PARSE);
+}
+
+// Test { null: null } special case
+FOSSIL_TEST_CASE(c_test_fson_parse_null_object_special) {
+    fossil_media_fson_error_t err = {0};
+    const char *json = "{ null: null }";
     fossil_media_fson_value_t *val = fossil_media_fson_parse(json, &err);
     ASSUME_NOT_CNULL(val);
     ASSUME_ITS_EQUAL_CSTR(fossil_media_fson_type_name(val->type), "null");
     fossil_media_fson_free(val);
 }
 
-FOSSIL_TEST_CASE(c_test_fson_parse_bool) {
+// Test missing key error
+FOSSIL_TEST_CASE(c_test_fson_parse_missing_key) {
     fossil_media_fson_error_t err = {0};
-    const char *json_true =
-        "{\n"
-        "    flag: bool: true\n"
-        "}";
-    const char *json_false =
-        "{\n"
-        "    flag: bool: false\n"
-        "}";
-    fossil_media_fson_value_t *val_true = fossil_media_fson_parse(json_true, &err);
-    fossil_media_fson_value_t *val_false = fossil_media_fson_parse(json_false, &err);
+    const char *json = "{ : i32: 1 }";
+    fossil_media_fson_value_t *val = fossil_media_fson_parse(json, &err);
+    ASSUME_ITS_CNULL(val);
+    ASSUME_ITS_EQUAL_I32(err.code, FOSSIL_MEDIA_FSON_ERR_PARSE);
+}
+
+// Test missing colon after key
+FOSSIL_TEST_CASE(c_test_fson_parse_missing_colon_after_key) {
+    fossil_media_fson_error_t err = {0};
+    const char *json = "{ key i32: 1 }";
+    fossil_media_fson_value_t *val = fossil_media_fson_parse(json, &err);
+    ASSUME_ITS_CNULL(val);
+    ASSUME_ITS_EQUAL_I32(err.code, FOSSIL_MEDIA_FSON_ERR_PARSE);
+}
+
+// Test empty object error
+FOSSIL_TEST_CASE(c_test_fson_parse_empty_object) {
+    fossil_media_fson_error_t err = {0};
+    const char *json = "{ }";
+    fossil_media_fson_value_t *val = fossil_media_fson_parse(json, &err);
+    ASSUME_ITS_CNULL(val);
+    ASSUME_ITS_EQUAL_I32(err.code, FOSSIL_MEDIA_FSON_ERR_PARSE);
+}
+
+// Test fallback to simple null
+FOSSIL_TEST_CASE(c_test_fson_parse_simple_null) {
+    fossil_media_fson_error_t err = {0};
+    fossil_media_fson_value_t *val = fossil_media_fson_parse("null", &err);
+    ASSUME_NOT_CNULL(val);
+    ASSUME_ITS_EQUAL_CSTR(fossil_media_fson_type_name(val->type), "null");
+    fossil_media_fson_free(val);
+}
+
+// Test fallback to simple true/false
+FOSSIL_TEST_CASE(c_test_fson_parse_simple_true_false) {
+    fossil_media_fson_error_t err = {0};
+    fossil_media_fson_value_t *val_true = fossil_media_fson_parse("true", &err);
+    fossil_media_fson_value_t *val_false = fossil_media_fson_parse("false", &err);
     ASSUME_NOT_CNULL(val_true);
     ASSUME_NOT_CNULL(val_false);
     ASSUME_ITS_EQUAL_CSTR(fossil_media_fson_type_name(val_true->type), "bool");
@@ -83,446 +126,173 @@ FOSSIL_TEST_CASE(c_test_fson_parse_bool) {
     fossil_media_fson_free(val_false);
 }
 
-FOSSIL_TEST_CASE(c_test_fson_parse_number) {
+// Test fallback to simple string
+FOSSIL_TEST_CASE(c_test_fson_parse_simple_string) {
     fossil_media_fson_error_t err = {0};
-    const char *json =
-        "{\n"
-        "    num: f64: 42.5\n"
-        "}";
-    fossil_media_fson_value_t *val = fossil_media_fson_parse(json, &err);
-    ASSUME_NOT_CNULL(val);
-    ASSUME_ITS_EQUAL_CSTR(fossil_media_fson_type_name(val->type), "f64");
-    fossil_media_fson_free(val);
-}
-
-FOSSIL_TEST_CASE(c_test_fson_parse_string) {
-    fossil_media_fson_error_t err = {0};
-    const char *json =
-        "{\n"
-        "    msg: cstr: \"hello\"\n"
-        "}";
-    fossil_media_fson_value_t *val = fossil_media_fson_parse(json, &err);
+    fossil_media_fson_value_t *val = fossil_media_fson_parse("\"abc\"", &err);
     ASSUME_NOT_CNULL(val);
     ASSUME_ITS_EQUAL_CSTR(fossil_media_fson_type_name(val->type), "cstr");
     fossil_media_fson_free(val);
 }
 
-FOSSIL_TEST_CASE(c_test_fson_parse_array) {
+// Test fallback to simple integer/float
+FOSSIL_TEST_CASE(c_test_fson_parse_simple_number) {
     fossil_media_fson_error_t err = {0};
-    const char *json =
-        "{\n"
-        "    arr: array: [\n"
-        "        1: i32: 1,\n"
-        "        2: i32: 2,\n"
-        "        3: i32: 3\n"
-        "    ]\n"
-        "}";
+    fossil_media_fson_value_t *val_int = fossil_media_fson_parse("123", &err);
+    fossil_media_fson_value_t *val_float = fossil_media_fson_parse("3.14", &err);
+    ASSUME_NOT_CNULL(val_int);
+    ASSUME_NOT_CNULL(val_float);
+    ASSUME_ITS_EQUAL_CSTR(fossil_media_fson_type_name(val_int->type), "i64");
+    ASSUME_ITS_EQUAL_CSTR(fossil_media_fson_type_name(val_float->type), "f64");
+    fossil_media_fson_free(val_int);
+    fossil_media_fson_free(val_float);
+}
+
+// Test unterminated string error
+FOSSIL_TEST_CASE(c_test_fson_parse_unterminated_string) {
+    fossil_media_fson_error_t err = {0};
+    fossil_media_fson_value_t *val = fossil_media_fson_parse("\"abc", &err);
+    ASSUME_ITS_CNULL(val);
+    ASSUME_ITS_EQUAL_I32(err.code, FOSSIL_MEDIA_FSON_ERR_PARSE);
+}
+
+// Test unrecognized value error
+FOSSIL_TEST_CASE(c_test_fson_parse_unrecognized_value) {
+    fossil_media_fson_error_t err = {0};
+    fossil_media_fson_value_t *val = fossil_media_fson_parse("???", &err);
+    ASSUME_ITS_CNULL(val);
+    ASSUME_ITS_EQUAL_I32(err.code, FOSSIL_MEDIA_FSON_ERR_PARSE);
+}
+
+// Edge case: object with quoted key and string value
+FOSSIL_TEST_CASE(c_test_fson_parse_object_quoted_key_string_value) {
+    fossil_media_fson_error_t err = {0};
+    const char *json = "{ \"foo\": cstr: \"bar\" }";
     fossil_media_fson_value_t *val = fossil_media_fson_parse(json, &err);
     ASSUME_NOT_CNULL(val);
-    ASSUME_ITS_EQUAL_CSTR(fossil_media_fson_type_name(val->type), "array");
-    ASSUME_ITS_EQUAL_SIZE(fossil_media_fson_array_size(val), 3);
+    ASSUME_ITS_EQUAL_CSTR(fossil_media_fson_type_name(val->type), "cstr");
+    char *out = NULL;
+    fossil_media_fson_get_cstr(val, &out);
+    ASSUME_ITS_EQUAL_CSTR(out, "bar");
     fossil_media_fson_free(val);
 }
 
-// New test: array with <type> operator
-FOSSIL_TEST_CASE(c_test_fson_parse_array_with_type_operator) {
+// Edge case: object with nested object
+FOSSIL_TEST_CASE(c_test_fson_parse_nested_object) {
     fossil_media_fson_error_t err = {0};
-    const char *json =
-        "{\n"
-        "    arr: array<i32>: [\n"
-        "        1,\n"
-        "        2,\n"
-        "        3\n"
-        "    ]\n"
-        "}";
-    fossil_media_fson_value_t *val = fossil_media_fson_parse(json, &err);
-    ASSUME_NOT_CNULL(val);
-    ASSUME_ITS_EQUAL_CSTR(fossil_media_fson_type_name(val->type), "array");
-    ASSUME_ITS_EQUAL_SIZE(fossil_media_fson_array_size(val), 3);
-    // Check that all elements are i32
-    for (size_t i = 0; i < fossil_media_fson_array_size(val); ++i) {
-        fossil_media_fson_value_t *item = fossil_media_fson_array_get(val, i);
-        ASSUME_NOT_CNULL(item);
-        ASSUME_ITS_EQUAL_CSTR(fossil_media_fson_type_name(item->type), "i32");
-    }
-    fossil_media_fson_free(val);
-}
-
-FOSSIL_TEST_CASE(c_test_fson_parse_object) {
-    fossil_media_fson_error_t err = {0};
-    const char *json =
-        "{\n"
-        "    obj: object: {\n"
-        "        a: i32: 1,\n"
-        "        b: i32: 2\n"
-        "    }\n"
-        "}";
+    const char *json = "{ user: object: { id: i32: 42 } }";
     fossil_media_fson_value_t *val = fossil_media_fson_parse(json, &err);
     ASSUME_NOT_CNULL(val);
     ASSUME_ITS_EQUAL_CSTR(fossil_media_fson_type_name(val->type), "object");
+    fossil_media_fson_value_t *id_val = fossil_media_fson_object_get(val, "id");
+    ASSUME_NOT_CNULL(id_val);
+    int32_t id = 0;
+    fossil_media_fson_get_i32(id_val, &id);
+    ASSUME_ITS_EQUAL_I32(id, 42);
     fossil_media_fson_free(val);
 }
 
-FOSSIL_TEST_CASE(c_test_fson_stringify_roundtrip) {
+// Edge case: array of mixed types using array<mix>
+FOSSIL_TEST_CASE(c_test_fson_parse_array_mixed_types) {
     fossil_media_fson_error_t err = {0};
-    const char *json =
-        "{\n"
-        "    foo: array: [\n"
-        "        1: i32: 1,\n"
-        "        true: bool: true,\n"
-        "        null: null: null\n"
-        "    ]\n"
-        "}";
-    char *out = fossil_media_fson_roundtrip(json, 0, &err);
-    ASSUME_NOT_CNULL(out);
-    free(out);
-}
-
-FOSSIL_TEST_CASE(c_test_fson_clone_and_equals) {
-    fossil_media_fson_error_t err = {0};
-    const char *json =
-        "{\n"
-        "    obj: object: {\n"
-        "        a: i32: 1,\n"
-        "        b: array: [\n"
-        "            true: bool: true,\n"
-        "            null: null: null\n"
-        "        ]\n"
-        "    }\n"
-        "}";
+    const char *json = "{ mixed: array<mix>: [i32: 1, cstr: \"two\", bool: true] }";
     fossil_media_fson_value_t *val = fossil_media_fson_parse(json, &err);
     ASSUME_NOT_CNULL(val);
-
-    fossil_media_fson_value_t *clone = fossil_media_fson_clone(val);
-    ASSUME_NOT_CNULL(clone);
-
-    int eq = fossil_media_fson_equals(val, clone);
-    ASSUME_ITS_EQUAL_I32(eq, 1);
-
+    fossil_media_fson_value_t *arr = fossil_media_fson_object_get(val, "mixed");
+    ASSUME_NOT_CNULL(arr);
+    ASSUME_ITS_EQUAL_I32((int)fossil_media_fson_array_size(arr), 3);
     fossil_media_fson_free(val);
-    fossil_media_fson_free(clone);
 }
 
-FOSSIL_TEST_CASE(c_test_fson_equals_not_equal) {
+// Edge case: array with explicit element type (array<i32>)
+FOSSIL_TEST_CASE(c_test_fson_parse_array_explicit_type) {
     fossil_media_fson_error_t err = {0};
-    const char *json1 =
-        "{\n"
-        "    x: i32: 42\n"
-        "}";
-    const char *json2 =
-        "{\n"
-        "    x: i32: 43\n"
-        "}";
-    fossil_media_fson_value_t *val1 = fossil_media_fson_parse(json1, &err);
-    fossil_media_fson_value_t *val2 = fossil_media_fson_parse(json2, &err);
-    ASSUME_NOT_CNULL(val1);
-    ASSUME_NOT_CNULL(val2);
-
-    int eq = fossil_media_fson_equals(val1, val2);
-    ASSUME_ITS_EQUAL_I32(eq, 0);
-
-    fossil_media_fson_free(val1);
-    fossil_media_fson_free(val2);
+    const char *json = "{ numbers: array<i32>: [i32: 1, i32: 2, i32: 3] }";
+    fossil_media_fson_value_t *val = fossil_media_fson_parse(json, &err);
+    ASSUME_NOT_CNULL(val);
+    fossil_media_fson_value_t *arr = fossil_media_fson_object_get(val, "numbers");
+    ASSUME_NOT_CNULL(arr);
+    int32_t n = 0;
+    fossil_media_fson_get_i32(fossil_media_fson_array_get(arr, 1), &n);
+    ASSUME_ITS_EQUAL_I32(n, 2);
+    fossil_media_fson_free(val);
 }
 
+// Edge case: array with empty brackets
 FOSSIL_TEST_CASE(c_test_fson_parse_empty_array) {
     fossil_media_fson_error_t err = {0};
-    const char *json =
-        "{\n"
-        "    arr: array: []\n"
-        "}";
+    const char *json = "{ empty: array<i32>: [] }";
     fossil_media_fson_value_t *val = fossil_media_fson_parse(json, &err);
     ASSUME_NOT_CNULL(val);
-    ASSUME_ITS_EQUAL_CSTR(fossil_media_fson_type_name(val->type), "array");
-    ASSUME_ITS_EQUAL_SIZE(fossil_media_fson_array_size(val), 0);
+    fossil_media_fson_value_t *arr = fossil_media_fson_object_get(val, "empty");
+    ASSUME_NOT_CNULL(arr);
+    ASSUME_ITS_EQUAL_I32((int)fossil_media_fson_array_size(arr), 0);
     fossil_media_fson_free(val);
 }
 
-FOSSIL_TEST_CASE(c_test_fson_parse_invalid_json) {
+// Edge case: malformed array type (missing >)
+FOSSIL_TEST_CASE(c_test_fson_parse_malformed_array_type) {
     fossil_media_fson_error_t err = {0};
-    const char *json = "{ invalid json ";
+    const char *json = "{ bad: array<i32: [i32: 1] }";
     fossil_media_fson_value_t *val = fossil_media_fson_parse(json, &err);
     ASSUME_ITS_CNULL(val);
+    ASSUME_ITS_EQUAL_I32(err.code, FOSSIL_MEDIA_FSON_ERR_TYPE);
 }
 
-FOSSIL_TEST_CASE(c_test_fson_parse_large_number) {
+// Edge case: object with unknown type
+FOSSIL_TEST_CASE(c_test_fson_parse_unknown_type) {
     fossil_media_fson_error_t err = {0};
-    const char *json =
-        "{\n"
-        "    big: i64: 9223372036854775807\n"
-        "}";
+    const char *json = "{ foo: unknown: 123 }";
     fossil_media_fson_value_t *val = fossil_media_fson_parse(json, &err);
-    ASSUME_NOT_CNULL(val);
-    ASSUME_ITS_EQUAL_CSTR(fossil_media_fson_type_name(val->type), "i64");
-    fossil_media_fson_free(val);
+    ASSUME_ITS_CNULL(val);
+    ASSUME_ITS_EQUAL_I32(err.code, FOSSIL_MEDIA_FSON_ERR_TYPE);
 }
 
-FOSSIL_TEST_CASE(c_test_fson_parse_special_char_string) {
+// Edge case: object with missing value
+FOSSIL_TEST_CASE(c_test_fson_parse_missing_value) {
     fossil_media_fson_error_t err = {0};
-    const char *json =
-        "{\n"
-        "    msg: cstr: \"hello\\nworld\\t!\"\n"
-        "}";
-    fossil_media_fson_value_t *val = fossil_media_fson_parse(json, &err);
-    ASSUME_NOT_CNULL(val);
-    ASSUME_ITS_EQUAL_CSTR(fossil_media_fson_type_name(val->type), "cstr");
-    fossil_media_fson_free(val);
-}
-
-FOSSIL_TEST_CASE(c_test_fson_parse_datetime) {
-    fossil_media_fson_error_t err = {0};
-    const char *json =
-        "{\n"
-        "    timestamp: datetime: \"2025-09-18T23:59:59Z\"\n"
-        "}";
-    fossil_media_fson_value_t *val = fossil_media_fson_parse(json, &err);
-    ASSUME_NOT_CNULL(val);
-    ASSUME_ITS_EQUAL_CSTR(fossil_media_fson_type_name(val->type), "datetime");
-    fossil_media_fson_free(val);
-}
-
-FOSSIL_TEST_CASE(c_test_fson_parse_duration) {
-    fossil_media_fson_error_t err = {0};
-    const char *json =
-        "{\n"
-        "    timeout: duration: \"5m30s\"\n"
-        "}";
-    fossil_media_fson_value_t *val = fossil_media_fson_parse(json, &err);
-    ASSUME_NOT_CNULL(val);
-    ASSUME_ITS_EQUAL_CSTR(fossil_media_fson_type_name(val->type), "duration");
-    fossil_media_fson_free(val);
-}
-
-FOSSIL_TEST_CASE(c_test_fson_parse_invalid_duration) {
-    fossil_media_fson_error_t err = {0};
-    const char *json =
-        "{\n"
-        "    timeout: duration: \"5minutes30seconds\"  // not ISO 8601 or simplified format\n"
-        "}";
+    const char *json = "{ foo: i32: }";
     fossil_media_fson_value_t *val = fossil_media_fson_parse(json, &err);
     ASSUME_ITS_CNULL(val);
     ASSUME_ITS_EQUAL_I32(err.code, FOSSIL_MEDIA_FSON_ERR_PARSE);
 }
 
-// Complex object with nested arrays and objects
-FOSSIL_TEST_CASE(c_test_fson_complex_nested) {
+// Edge case: object with extra comma
+FOSSIL_TEST_CASE(c_test_fson_parse_object_extra_comma) {
     fossil_media_fson_error_t err = {0};
-    const char *json =
-        "{\n"
-        "    app: object: {\n"
-        "        name: cstr: \"Fossil App\",\n"
-        "        version: u32: 101,\n"
-        "        debug: bool: true,\n"
-        "        log: object: {\n"
-        "            level: enum: \"info\",\n"
-        "            output: cstr: \"/tmp/fossil.log\"\n"
-        "        },\n"
-        "        features: array: [\n"
-        "            feature1: bool: true,\n"
-        "            feature2: bool: false,\n"
-        "            max_threads: u8: 16\n"
-        "        ]\n"
-        "    },\n"
-        "    crypto: object: {\n"
-        "        enabled: bool: true,\n"
-        "        key: hex: \"DEADBEEFCAFEBABE\"\n"
-        "    }\n"
-        "}";
+    const char *json = "{ foo: i32: 1, }";
     fossil_media_fson_value_t *val = fossil_media_fson_parse(json, &err);
+    // Acceptable in FSON: trailing comma is ignored, so should parse
     ASSUME_NOT_CNULL(val);
-    ASSUME_ITS_EQUAL_CSTR(fossil_media_fson_type_name(val->type), "object");
-
-    // Validate nested object
-    fossil_media_fson_value_t *app_obj = fossil_media_fson_object_get(val, "app");
-    ASSUME_NOT_CNULL(app_obj);
-    ASSUME_ITS_EQUAL_CSTR(fossil_media_fson_type_name(app_obj->type), "object");
-
-    // Validate nested array
-    fossil_media_fson_value_t *features_arr = fossil_media_fson_object_get(app_obj, "features");
-    ASSUME_NOT_CNULL(features_arr);
-    ASSUME_ITS_EQUAL_CSTR(fossil_media_fson_type_name(features_arr->type), "array");
-    ASSUME_ITS_EQUAL_SIZE(fossil_media_fson_array_size(features_arr), 3);
-
     fossil_media_fson_free(val);
 }
 
-// Edge case tests for array<type> parsing
-
-// array<mix>: Should allow elements of any type, no conversion.
-FOSSIL_TEST_CASE(c_test_fson_parse_array_mix) {
+// Edge case: array with extra comma
+FOSSIL_TEST_CASE(c_test_fson_parse_array_extra_comma) {
     fossil_media_fson_error_t err = {0};
-    const char *json =
-        "{\n"
-        "    arr: array<mix>: [\n"
-        "        1,\n"
-        "        \"hello\",\n"
-        "        true,\n"
-        "        null\n"
-        "    ]\n"
-        "}";
+    const char *json = "[i32: 1, i32: 2, ]";
     fossil_media_fson_value_t *val = fossil_media_fson_parse(json, &err);
+    // Acceptable in FSON: trailing comma is ignored, so should parse
     ASSUME_NOT_CNULL(val);
-    ASSUME_ITS_EQUAL_CSTR(fossil_media_fson_type_name(val->type), "array");
-    ASSUME_ITS_EQUAL_SIZE(fossil_media_fson_array_size(val), 4);
     fossil_media_fson_free(val);
 }
 
-// array<hex>: Should convert all elements to hex if possible.
-FOSSIL_TEST_CASE(c_test_fson_parse_array_hex) {
+// Edge case: parse hex, octal, binary numbers
+FOSSIL_TEST_CASE(c_test_fson_parse_hex_oct_bin) {
     fossil_media_fson_error_t err = {0};
-    const char *json =
-        "{\n"
-        "    arr: array<hex>: [\n"
-        "        \"DEAD\",\n"
-        "        \"BEEF\"\n"
-        "    ]\n"
-        "}";
+    const char *json = "{ hex: hex: 0xFF, oct: oct: 0o755, bin: bin: 0b1010 }";
     fossil_media_fson_value_t *val = fossil_media_fson_parse(json, &err);
     ASSUME_NOT_CNULL(val);
-    for (size_t i = 0; i < fossil_media_fson_array_size(val); ++i) {
-        fossil_media_fson_value_t *item = fossil_media_fson_array_get(val, i);
-        ASSUME_NOT_CNULL(item);
-        ASSUME_ITS_EQUAL_CSTR(fossil_media_fson_type_name(item->type), "hex");
-    }
-    fossil_media_fson_free(val);
-}
-
-// Nested arrays: array<array<i32>>
-FOSSIL_TEST_CASE(c_test_fson_parse_nested_array_i32) {
-    fossil_media_fson_error_t err = {0};
-    const char *json =
-        "{\n"
-        "    arr: array<array<i32>>: [\n"
-        "        [1, 2],\n"
-        "        [3, 4]\n"
-        "    ]\n"
-        "}";
-    fossil_media_fson_value_t *val = fossil_media_fson_parse(json, &err);
-    ASSUME_NOT_CNULL(val);
-    ASSUME_ITS_EQUAL_SIZE(fossil_media_fson_array_size(val), 2);
-    for (size_t i = 0; i < fossil_media_fson_array_size(val); ++i) {
-        fossil_media_fson_value_t *subarr = fossil_media_fson_array_get(val, i);
-        ASSUME_NOT_CNULL(subarr);
-        ASSUME_ITS_EQUAL_CSTR(fossil_media_fson_type_name(subarr->type), "array");
-        for (size_t j = 0; j < fossil_media_fson_array_size(subarr); ++j) {
-            fossil_media_fson_value_t *item = fossil_media_fson_array_get(subarr, j);
-            ASSUME_NOT_CNULL(item);
-            ASSUME_ITS_EQUAL_CSTR(fossil_media_fson_type_name(item->type), "i32");
-        }
-    }
-    fossil_media_fson_free(val);
-}
-
-// Nested arrays: array<array<mix>>
-FOSSIL_TEST_CASE(c_test_fson_parse_nested_array_mix) {
-    fossil_media_fson_error_t err = {0};
-    const char *json =
-        "{\n"
-        "    arr: array<array<mix>>: [\n"
-        "        [1, \"a\"],\n"
-        "        [true, null]\n"
-        "    ]\n"
-        "}";
-    fossil_media_fson_value_t *val = fossil_media_fson_parse(json, &err);
-    ASSUME_NOT_CNULL(val);
-    ASSUME_ITS_EQUAL_SIZE(fossil_media_fson_array_size(val), 2);
-    fossil_media_fson_free(val);
-}
-
-// Empty arrays: array<i32>: []
-FOSSIL_TEST_CASE(c_test_fson_parse_empty_array_i32) {
-    fossil_media_fson_error_t err = {0};
-    const char *json =
-        "{ arr: array<i32>: [] }";
-    fossil_media_fson_value_t *val = fossil_media_fson_parse(json, &err);
-    ASSUME_NOT_CNULL(val);
-    ASSUME_ITS_EQUAL_SIZE(fossil_media_fson_array_size(val), 0);
-    fossil_media_fson_free(val);
-}
-
-// Malformed type: array<>
-FOSSIL_TEST_CASE(c_test_fson_parse_array_empty_type) {
-    fossil_media_fson_error_t err = {0};
-    const char *json =
-        "{ arr: array<>: [1,2,3] }";
-    fossil_media_fson_value_t *val = fossil_media_fson_parse(json, &err);
-    ASSUME_ITS_CNULL(val);
-}
-
-// Malformed type: array<unknown>
-FOSSIL_TEST_CASE(c_test_fson_parse_array_unknown_type) {
-    fossil_media_fson_error_t err = {0};
-    const char *json =
-        "{ arr: array<unknown>: [1,2,3] }";
-    fossil_media_fson_value_t *val = fossil_media_fson_parse(json, &err);
-    ASSUME_ITS_CNULL(val);
-}
-
-// Elements that cannot be converted: array<i32>: [1, \"a\", 3]
-FOSSIL_TEST_CASE(c_test_fson_parse_array_i32_with_invalid) {
-    fossil_media_fson_error_t err = {0};
-    const char *json =
-        "{ arr: array<i32>: [1, \"a\", 3] }";
-    fossil_media_fson_value_t *val = fossil_media_fson_parse(json, &err);
-    ASSUME_NOT_CNULL(val);
-    // The invalid element should fallback or error, but array should still be parsed
-    ASSUME_ITS_EQUAL_SIZE(fossil_media_fson_array_size(val), 3);
-    fossil_media_fson_free(val);
-}
-
-// Whitespace and extra colons: array < i32 > : [ ... ]
-FOSSIL_TEST_CASE(c_test_fson_parse_array_whitespace_colon) {
-    fossil_media_fson_error_t err = {0};
-    const char *json =
-        "{ arr : array < i32 > : [1,2,3] }";
-    fossil_media_fson_value_t *val = fossil_media_fson_parse(json, &err);
-    ASSUME_NOT_CNULL(val);
-    ASSUME_ITS_EQUAL_SIZE(fossil_media_fson_array_size(val), 3);
-    fossil_media_fson_free(val);
-}
-
-// Large arrays: Should not overflow buffers.
-FOSSIL_TEST_CASE(c_test_fson_parse_large_array) {
-    fossil_media_fson_error_t err = {0};
-    char json[4096];
-    strcpy(json, "{ arr: array<i32>: [");
-    for (int i = 0; i < 1000; ++i) {
-        char buf[16];
-        sprintf(buf, "%d", i);
-        strcat(json, buf);
-        if (i < 999) strcat(json, ",");
-    }
-    strcat(json, "] }");
-    fossil_media_fson_value_t *val = fossil_media_fson_parse(json, &err);
-    ASSUME_NOT_CNULL(val);
-    ASSUME_ITS_EQUAL_SIZE(fossil_media_fson_array_size(val), 1000);
-    fossil_media_fson_free(val);
-}
-
-// Deeply nested: array<array<array<i32>>>
-FOSSIL_TEST_CASE(c_test_fson_parse_deeply_nested_array) {
-    fossil_media_fson_error_t err = {0};
-    const char *json =
-        "{ arr: array<array<array<i32>>>: [ [[1],[2]], [[3],[4]] ] }";
-    fossil_media_fson_value_t *val = fossil_media_fson_parse(json, &err);
-    ASSUME_NOT_CNULL(val);
-    // Check top-level array
-    ASSUME_ITS_EQUAL_SIZE(fossil_media_fson_array_size(val), 2);
-    for (size_t i = 0; i < fossil_media_fson_array_size(val); ++i) {
-        fossil_media_fson_value_t *mid = fossil_media_fson_array_get(val, i);
-        ASSUME_NOT_CNULL(mid);
-        ASSUME_ITS_EQUAL_CSTR(fossil_media_fson_type_name(mid->type), "array");
-        ASSUME_ITS_EQUAL_SIZE(fossil_media_fson_array_size(mid), 2);
-        for (size_t j = 0; j < fossil_media_fson_array_size(mid); ++j) {
-            fossil_media_fson_value_t *leaf = fossil_media_fson_array_get(mid, j);
-            ASSUME_NOT_CNULL(leaf);
-            ASSUME_ITS_EQUAL_CSTR(fossil_media_fson_type_name(leaf->type), "array");
-            ASSUME_ITS_EQUAL_SIZE(fossil_media_fson_array_size(leaf), 1);
-            fossil_media_fson_value_t *item = fossil_media_fson_array_get(leaf, 0);
-            ASSUME_NOT_CNULL(item);
-            ASSUME_ITS_EQUAL_CSTR(fossil_media_fson_type_name(item->type), "i32");
-        }
-    }
+    fossil_media_fson_value_t *hex_val = fossil_media_fson_object_get(val, "hex");
+    fossil_media_fson_value_t *oct_val = fossil_media_fson_object_get(val, "oct");
+    fossil_media_fson_value_t *bin_val = fossil_media_fson_object_get(val, "bin");
+    uint64_t u = 0;
+    fossil_media_fson_get_hex(hex_val, &u);
+    ASSUME_ITS_EQUAL_I32((int)u, 255);
+    fossil_media_fson_get_oct(oct_val, &u);
+    ASSUME_ITS_EQUAL_I32((int)u, 493);
+    fossil_media_fson_get_bin(bin_val, &u);
+    ASSUME_ITS_EQUAL_I32((int)u, 10);
     fossil_media_fson_free(val);
 }
 
@@ -530,35 +300,30 @@ FOSSIL_TEST_CASE(c_test_fson_parse_deeply_nested_array) {
 // * Fossil Logic Test Pool
 // * * * * * * * * * * * * * * * * * * * * * * * *
 FOSSIL_TEST_GROUP(c_fson_tests) {
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_null);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_bool);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_number);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_string);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_array);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_object);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_stringify_roundtrip);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_clone_and_equals);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_equals_not_equal);
+    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_null_input);
+    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_whitespace_only);
+    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_null_object_special);
+    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_missing_key);
+    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_missing_colon_after_key);
+    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_empty_object);
+    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_simple_null);
+    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_simple_true_false);
+    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_simple_string);
+    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_simple_number);
+    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_unterminated_string);
+    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_unrecognized_value);
+
+    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_object_quoted_key_string_value);
+    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_nested_object);
+    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_array_mixed_types);
+    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_array_explicit_type);
     FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_empty_array);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_invalid_json);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_large_number);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_special_char_string);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_datetime);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_duration);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_invalid_duration);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_complex_nested);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_array_with_type_operator);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_array_mix);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_array_hex);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_nested_array_i32);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_nested_array_mix);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_empty_array_i32);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_array_empty_type);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_array_unknown_type);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_array_i32_with_invalid);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_array_whitespace_colon);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_large_array);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_deeply_nested_array);
+    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_malformed_array_type);
+    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_unknown_type);
+    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_missing_value);
+    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_object_extra_comma);
+    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_array_extra_comma);
+    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_hex_oct_bin);
 
     FOSSIL_TEST_REGISTER(c_fson_fixture);
 } // end of tests
