@@ -287,23 +287,100 @@ fossil_media_fson_value_t *fossil_media_fson_parse(const char *json_text, fossil
                 val = fossil_media_fson_parse(obj_buf, NULL);
                 free(obj_buf);
             }
-            // Handle nested array with type: array<i32>, array<hex>, array<cstr>, array<mix>, etc.
-            else if (strncmp(base_type, "array", 5) == 0 && *json_text == '<') {
+            // Handle nested array with type: array<i32>, array<hex>, array<cstr>, array<mix>, array<array<i32>>, etc.
+            else if (strncmp(base_type, "array", 5) == 0 && strchr(type, '<')) {
                 // Parse array type: array<type>
-                char elem_type[32] = {0};
+                char elem_type[128] = {0};
                 int is_mixed = 0;
+                // Find matching angle brackets for nested types
                 const char *lt = strchr(type, '<');
-                const char *gt = strchr(type, '>');
-                if (lt && gt && gt > lt + 1 && (size_t)(gt - lt - 1) < sizeof(elem_type)) {
-                    memcpy(elem_type, lt + 1, gt - lt - 1);
-                    elem_type[gt - lt - 1] = '\0';
-                    if (strcmp(elem_type, "mix") == 0) {
-                        is_mixed = 1;
+                if (!lt) {
+                    free(key);
+                    free(type);
+                    fossil_media_fson_free(obj);
+                    if (err_out) {
+                        err_out->code = FOSSIL_MEDIA_FSON_ERR_TYPE;
+                        err_out->position = (size_t)(json_text - input_start);
+                        snprintf(err_out->message, sizeof(err_out->message), "Malformed array type (no <)");
                     }
+                    return NULL;
                 }
-                // Move json_text to after '>'
-                while (*json_text && *json_text != '>') json_text++;
-                if (*json_text == '>') json_text++;
+                // Find the matching '>' for the first '<'
+                int angle = 1;
+                const char *gt = lt + 1;
+                while (*gt && angle > 0) {
+                    if (*gt == '<') angle++;
+                    else if (*gt == '>') angle--;
+                    gt++;
+                }
+                if (angle != 0) {
+                    // Unmatched angle brackets
+                    free(key);
+                    free(type);
+                    fossil_media_fson_free(obj);
+                    if (err_out) {
+                        err_out->code = FOSSIL_MEDIA_FSON_ERR_TYPE;
+                        err_out->position = (size_t)(json_text - input_start);
+                        snprintf(err_out->message, sizeof(err_out->message), "Malformed array type (unmatched < >)");
+                    }
+                    return NULL;
+                }
+                // Copy element type, skipping whitespace
+                const char *et_start = lt + 1;
+                const char *et_end = gt - 2;
+                while (et_start <= et_end && isspace((unsigned char)*et_start)) et_start++;
+                while (et_end >= et_start && isspace((unsigned char)*et_end)) et_end--;
+                size_t et_len = et_end >= et_start ? (size_t)(et_end - et_start + 1) : 0;
+                if (et_len == 0 || et_len >= sizeof(elem_type)) {
+                    free(key);
+                    free(type);
+                    fossil_media_fson_free(obj);
+                    if (err_out) {
+                        err_out->code = FOSSIL_MEDIA_FSON_ERR_TYPE;
+                        err_out->position = (size_t)(json_text - input_start);
+                        snprintf(err_out->message, sizeof(err_out->message), "Malformed or empty array type");
+                    }
+                    return NULL;
+                }
+                memcpy(elem_type, et_start, et_len);
+                elem_type[et_len] = '\0';
+                if (strcmp(elem_type, "mix") == 0) {
+                    is_mixed = 1;
+                } else if (
+                    strcmp(elem_type, "i8") != 0 &&
+                    strcmp(elem_type, "i16") != 0 &&
+                    strcmp(elem_type, "i32") != 0 &&
+                    strcmp(elem_type, "i64") != 0 &&
+                    strcmp(elem_type, "u8") != 0 &&
+                    strcmp(elem_type, "u16") != 0 &&
+                    strcmp(elem_type, "u32") != 0 &&
+                    strcmp(elem_type, "u64") != 0 &&
+                    strcmp(elem_type, "f32") != 0 &&
+                    strcmp(elem_type, "f64") != 0 &&
+                    strcmp(elem_type, "oct") != 0 &&
+                    strcmp(elem_type, "hex") != 0 &&
+                    strcmp(elem_type, "bin") != 0 &&
+                    strcmp(elem_type, "char") != 0 &&
+                    strcmp(elem_type, "cstr") != 0 &&
+                    strcmp(elem_type, "bool") != 0 &&
+                    strcmp(elem_type, "enum") != 0 &&
+                    strcmp(elem_type, "datetime") != 0 &&
+                    strcmp(elem_type, "duration") != 0 &&
+                    strncmp(elem_type, "array<", 6) != 0 // allow nested
+                ) {
+                    // Unknown type
+                    free(key);
+                    free(type);
+                    fossil_media_fson_free(obj);
+                    if (err_out) {
+                        err_out->code = FOSSIL_MEDIA_FSON_ERR_TYPE;
+                        err_out->position = (size_t)(json_text - input_start);
+                        snprintf(err_out->message, sizeof(err_out->message), "Unknown array element type: %s", elem_type);
+                    }
+                    return NULL;
+                }
+                // Move json_text to after the matching '>'
+                json_text = gt;
                 while (isspace((unsigned char)*json_text)) json_text++;
                 if (*json_text == ':') json_text++; // skip optional colon
                 while (isspace((unsigned char)*json_text)) json_text++;
@@ -352,12 +429,35 @@ fossil_media_fson_value_t *fossil_media_fson_parse(const char *json_text, fossil
                         for (size_t i = 0; i < parsed_arr->u.array.count; i++) {
                             fossil_media_fson_value_t *item = parsed_arr->u.array.items[i];
                             fossil_media_fson_value_t *converted = NULL;
-                            // Only convert if not already the right type
-                            if (
+                            // Nested array support: array<array<...>>
+                            if (strncmp(elem_type, "array<", 6) == 0) {
+                                // Recursively wrap as array<...>
+                                if (item->type == FSON_TYPE_ARRAY) {
+                                    // Compose: x: array<...>: [ ... ]
+                                    char *item_str = fossil_media_fson_stringify(item, 0, NULL);
+                                    if (item_str) {
+                                        char fake_fson[256];
+                                        snprintf(fake_fson, sizeof(fake_fson), "x: array<%s>: %s", elem_type + 6, item_str);
+                                        converted = fossil_media_fson_parse(fake_fson, NULL);
+                                        free(item_str);
+                                    }
+                                }
+                            } else if (
+                                (strcmp(elem_type, "i8") == 0 && item->type != FSON_TYPE_I8) ||
+                                (strcmp(elem_type, "i16") == 0 && item->type != FSON_TYPE_I16) ||
                                 (strcmp(elem_type, "i32") == 0 && item->type != FSON_TYPE_I32) ||
                                 (strcmp(elem_type, "i64") == 0 && item->type != FSON_TYPE_I64) ||
+                                (strcmp(elem_type, "u8") == 0 && item->type != FSON_TYPE_U8) ||
+                                (strcmp(elem_type, "u16") == 0 && item->type != FSON_TYPE_U16) ||
+                                (strcmp(elem_type, "u32") == 0 && item->type != FSON_TYPE_U32) ||
+                                (strcmp(elem_type, "u64") == 0 && item->type != FSON_TYPE_U64) ||
+                                (strcmp(elem_type, "f32") == 0 && item->type != FSON_TYPE_F32) ||
+                                (strcmp(elem_type, "f64") == 0 && item->type != FSON_TYPE_F64) ||
                                 (strcmp(elem_type, "hex") == 0 && item->type != FSON_TYPE_HEX) ||
+                                (strcmp(elem_type, "oct") == 0 && item->type != FSON_TYPE_OCT) ||
+                                (strcmp(elem_type, "bin") == 0 && item->type != FSON_TYPE_BIN) ||
                                 (strcmp(elem_type, "cstr") == 0 && item->type != FSON_TYPE_CSTR) ||
+                                (strcmp(elem_type, "char") == 0 && item->type != FSON_TYPE_CHAR) ||
                                 (strcmp(elem_type, "bool") == 0 && item->type != FSON_TYPE_BOOL)
                             ) {
                                 // Try to convert using the parse logic for that type
@@ -378,6 +478,15 @@ fossil_media_fson_value_t *fossil_media_fson_parse(const char *json_text, fossil
                                         break;
                                     case FSON_TYPE_BOOL:
                                         snprintf(buf, sizeof(buf), "%s", item->u.boolean ? "true" : "false");
+                                        break;
+                                    case FSON_TYPE_U32:
+                                        snprintf(buf, sizeof(buf), "%u", item->u.u32);
+                                        break;
+                                    case FSON_TYPE_F32:
+                                        snprintf(buf, sizeof(buf), "%g", item->u.f32);
+                                        break;
+                                    case FSON_TYPE_F64:
+                                        snprintf(buf, sizeof(buf), "%g", item->u.f64);
                                         break;
                                     default:
                                         buf[0] = '\0';
@@ -401,67 +510,12 @@ fossil_media_fson_value_t *fossil_media_fson_parse(const char *json_text, fossil
                         }
                         fossil_media_fson_free(parsed_arr);
                         val = typed_arr;
+                    } else if (parsed_arr && is_mixed && fossil_media_fson_is_array(parsed_arr)) {
+                        // For array<mix>, just use as-is
+                        val = parsed_arr;
                     } else {
                         val = parsed_arr;
                     }
-                }
-            }
-            // Handle legacy: array: [ ... ] (no type)
-            else if (strcmp(base_type, "array") == 0 && *json_text == '[') {
-                int bracket = 1;
-                const char *arr_start = json_text;
-                json_text++;
-                while (*json_text && bracket > 0) {
-                    if (*json_text == '[') bracket++;
-                    else if (*json_text == ']') bracket--;
-                    json_text++;
-                }
-                size_t arr_len = json_text - arr_start;
-                char *arr_buf = (char *)malloc(arr_len + 1);
-                if (!arr_buf) {
-                    free(key);
-                    free(type);
-                    fossil_media_fson_free(obj);
-                    if (err_out) {
-                        err_out->code = FOSSIL_MEDIA_FSON_ERR_NOMEM;
-                        err_out->position = 0;
-                        snprintf(err_out->message, sizeof(err_out->message), "Out of memory");
-                    }
-                    return NULL;
-                }
-                strncpy(arr_buf, arr_start, arr_len);
-                arr_buf[arr_len] = '\0';
-                val = fossil_media_fson_parse(arr_buf, NULL);
-                free(arr_buf);
-            }
-            // Handle enum
-            else if (strcmp(base_type, "enum") == 0) {
-                if (*json_text == '"') {
-                    json_text++;
-                    const char *sym_start = json_text;
-                    while (*json_text && *json_text != '"') {
-                        if (*json_text == '\\' && *(json_text + 1)) json_text++;
-                        json_text++;
-                    }
-                    size_t sym_len = json_text - sym_start;
-                    char *symbol = (char *)malloc(sym_len + 1);
-                    if (!symbol) {
-                        free(key);
-                        free(type);
-                        fossil_media_fson_free(obj);
-                        if (err_out) {
-                            err_out->code = FOSSIL_MEDIA_FSON_ERR_NOMEM;
-                            err_out->position = 0;
-                            snprintf(err_out->message, sizeof(err_out->message), "Out of memory");
-                        }
-                        return NULL;
-                    }
-                    strncpy(symbol, sym_start, sym_len);
-                    symbol[sym_len] = '\0';
-
-                    val = fossil_media_fson_new_string(symbol);
-                    free(symbol);
-                    if (*json_text == '"') json_text++;
                 }
             }
             // Handle datetime
