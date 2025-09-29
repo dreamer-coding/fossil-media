@@ -665,7 +665,7 @@ fossil_media_fson_value_t *fossil_media_fson_parse(const char *json_text, fossil
                                             char fake_fson[256];
                                             size_t written = snprintf(fake_fson, sizeof(fake_fson),
                                                                       "x:%.100s: %.100s",
-                                                                      elem_type ? elem_type : "",
+                                                                      elem_type,
                                                                       buf);
                                             fake_fson[sizeof(fake_fson) - 1] = '\0';
                                             if (written >= sizeof(fake_fson)) {
