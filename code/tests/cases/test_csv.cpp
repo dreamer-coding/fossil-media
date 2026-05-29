@@ -22,7 +22,7 @@
  * Copyright (C) 2014-2025 Fossil Logic. All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include <fossil/pizza/framework.h>
+#include <fossil/maip/framework.h>
 #include "fossil/media/framework.h"
 
 
@@ -33,7 +33,7 @@
 // mock objects are set here.
 // * * * * * * * * * * * * * * * * * * * * * * * *
 
-FOSSIL_TEST_SUITE(cpp_csv_fixture);
+FOSSIL_SUITE(cpp_csv_fixture);
 
 FOSSIL_SETUP(cpp_csv_fixture) {
     // Setup the test fixture
@@ -53,7 +53,7 @@ FOSSIL_TEARDOWN(cpp_csv_fixture) {
 
 using fossil::media::Csv;
 
-FOSSIL_TEST_CASE(cpp_test_parse_simple_csv) {
+FOSSIL_TEST(cpp_test_parse_simple_csv) {
     Csv csv("a,b,c\n1,2,3\n");
     ASSUME_ITS_TRUE(csv.row_count() == 2);
     ASSUME_ITS_TRUE(csv.field_count(0) == 3);
@@ -61,38 +61,38 @@ FOSSIL_TEST_CASE(cpp_test_parse_simple_csv) {
     ASSUME_ITS_TRUE(csv.field(1, 2) == "3");
 }
 
-FOSSIL_TEST_CASE(cpp_test_parse_quoted_fields) {
+FOSSIL_TEST(cpp_test_parse_quoted_fields) {
     Csv csv("\"a\",\"b\",\"c\"\n\"1,2\",\"3\",\"4\"\n");
     ASSUME_ITS_TRUE(csv.row_count() == 2);
     ASSUME_ITS_TRUE(csv.field(1, 0) == "1,2");
 }
 
-FOSSIL_TEST_CASE(cpp_test_parse_empty_fields) {
+FOSSIL_TEST(cpp_test_parse_empty_fields) {
     Csv csv("a,,c\n,,\n");
     ASSUME_ITS_TRUE(csv.row_count() == 2);
     ASSUME_ITS_TRUE(csv.field(0, 1) == "");
     ASSUME_ITS_TRUE(csv.field(1, 2) == "");
 }
 
-FOSSIL_TEST_CASE(cpp_test_stringify_roundtrip) {
+FOSSIL_TEST(cpp_test_stringify_roundtrip) {
     Csv csv("a,b,\"c,d\"\n1,2,3\n");
     std::string out = csv.to_string();
     ASSUME_ITS_TRUE(out.find("c,d") != std::string::npos);
 }
 
-FOSSIL_TEST_CASE(cpp_test_append_row) {
+FOSSIL_TEST(cpp_test_append_row) {
     Csv csv("a,b\n");
     csv.append_row({"1", "2"});
     ASSUME_ITS_TRUE(csv.row_count() == 2);
     ASSUME_ITS_TRUE(csv.field(1, 1) == "2");
 }
 
-FOSSIL_TEST_CASE(cpp_test_parse_invalid_input) {
+FOSSIL_TEST(cpp_test_parse_invalid_input) {
     Csv csv(std::string(), ',');
     ASSUME_ITS_TRUE(csv.row_count() == 0);
 }
 
-FOSSIL_TEST_CASE(cpp_test_parse_single_row) {
+FOSSIL_TEST(cpp_test_parse_single_row) {
     Csv csv("foo,bar,baz\n");
     ASSUME_ITS_TRUE(csv.row_count() == 1);
     ASSUME_ITS_TRUE(csv.field(0, 0) == "foo");
@@ -100,33 +100,33 @@ FOSSIL_TEST_CASE(cpp_test_parse_single_row) {
     ASSUME_ITS_TRUE(csv.field(0, 2) == "baz");
 }
 
-FOSSIL_TEST_CASE(cpp_test_parse_custom_delimiter) {
+FOSSIL_TEST(cpp_test_parse_custom_delimiter) {
     Csv csv("a;b;c\n1;2;3\n", ';');
     ASSUME_ITS_TRUE(csv.row_count() == 2);
     ASSUME_ITS_TRUE(csv.field(1, 2) == "3");
 }
 
-FOSSIL_TEST_CASE(cpp_test_stringify_empty_doc) {
+FOSSIL_TEST(cpp_test_stringify_empty_doc) {
     Csv csv("");
     std::string out = csv.to_string();
     ASSUME_ITS_TRUE(out.empty());
 }
 
-FOSSIL_TEST_CASE(cpp_test_parse_only_delimiters) {
+FOSSIL_TEST(cpp_test_parse_only_delimiters) {
     Csv csv(",,,\n,,,\n");
     ASSUME_ITS_TRUE(csv.row_count() == 2);
     ASSUME_ITS_TRUE(csv.field_count(0) == 4);
     ASSUME_ITS_TRUE(csv.field(0, 2) == "");
 }
 
-FOSSIL_TEST_CASE(cpp_test_parse_escaped_quotes) {
+FOSSIL_TEST(cpp_test_parse_escaped_quotes) {
     Csv csv("\"a\"\"b\",c\n");
     ASSUME_ITS_TRUE(csv.row_count() == 1);
     ASSUME_ITS_TRUE(csv.field(0, 0) == "a\"b");
     ASSUME_ITS_TRUE(csv.field(0, 1) == "c");
 }
 
-FOSSIL_TEST_CASE(cpp_test_parse_long_field) {
+FOSSIL_TEST(cpp_test_parse_long_field) {
     std::string long_field(1023, 'x');
     std::string csv_text = long_field + ",1\n";
     Csv csv(csv_text);
@@ -135,7 +135,7 @@ FOSSIL_TEST_CASE(cpp_test_parse_long_field) {
     ASSUME_ITS_TRUE(csv.field(0, 1) == "1");
 }
 
-FOSSIL_TEST_CASE(cpp_test_parse_no_fields) {
+FOSSIL_TEST(cpp_test_parse_no_fields) {
     Csv csv("");
     ASSUME_ITS_TRUE(csv.row_count() == 0);
 }

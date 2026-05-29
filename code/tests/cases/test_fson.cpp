@@ -22,7 +22,7 @@
  * Copyright (C) 2014-2025 Fossil Logic. All rights reserved.
  * -----------------------------------------------------------------------------
  */
-#include <fossil/pizza/framework.h>
+#include <fossil/maip/framework.h>
 #include "fossil/media/framework.h"
 
 
@@ -33,7 +33,7 @@
 // mock objects are set here.
 // * * * * * * * * * * * * * * * * * * * * * * * *
 
-FOSSIL_TEST_SUITE(cpp_fson_fixture);
+FOSSIL_SUITE(cpp_fson_fixture);
 
 FOSSIL_SETUP(cpp_fson_fixture) {
     // Setup for FSON tests
@@ -51,7 +51,7 @@ FOSSIL_TEARDOWN(cpp_fson_fixture) {
 // as samples for library usage.
 // * * * * * * * * * * * * * * * * * * * * * * * *
 
-FOSSIL_TEST_CASE(cpp_test_fson_cpp_array_append_get_size) {
+FOSSIL_TEST(cpp_test_fson_cpp_array_append_get_size) {
     using fossil::media::Fson;
     try {
         Fson arr = Fson::new_array();
@@ -67,7 +67,7 @@ FOSSIL_TEST_CASE(cpp_test_fson_cpp_array_append_get_size) {
     }
 }
 
-FOSSIL_TEST_CASE(cpp_test_fson_cpp_type_name_and_helpers) {
+FOSSIL_TEST(cpp_test_fson_cpp_type_name_and_helpers) {
     using fossil::media::Fson;
     try {
         Fson v_null;
@@ -81,7 +81,7 @@ FOSSIL_TEST_CASE(cpp_test_fson_cpp_type_name_and_helpers) {
     }
 }
 
-FOSSIL_TEST_CASE(cpp_test_fson_cpp_array_object_reserve) {
+FOSSIL_TEST(cpp_test_fson_cpp_array_object_reserve) {
     using fossil::media::Fson;
     try {
         Fson arr = Fson::new_array();
@@ -95,7 +95,7 @@ FOSSIL_TEST_CASE(cpp_test_fson_cpp_array_object_reserve) {
     }
 }
 
-FOSSIL_TEST_CASE(cpp_test_fson_cpp_clone_and_equals) {
+FOSSIL_TEST(cpp_test_fson_cpp_clone_and_equals) {
     using fossil::media::Fson;
     try {
         Fson v1 = Fson::new_i32(123);
@@ -106,7 +106,7 @@ FOSSIL_TEST_CASE(cpp_test_fson_cpp_clone_and_equals) {
     }
 }
 
-FOSSIL_TEST_CASE(cpp_test_fson_cpp_number_getters) {
+FOSSIL_TEST(cpp_test_fson_cpp_number_getters) {
     using fossil::media::Fson;
     try {
         Fson vi8 = Fson::new_i8(-8);
@@ -121,7 +121,7 @@ FOSSIL_TEST_CASE(cpp_test_fson_cpp_number_getters) {
     }
 }
 
-FOSSIL_TEST_CASE(cpp_test_fson_cpp_edge_cases) {
+FOSSIL_TEST(cpp_test_fson_cpp_edge_cases) {
     using fossil::media::Fson;
     try {
         // Access out-of-bounds index in array
