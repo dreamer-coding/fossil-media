@@ -287,23 +287,23 @@ FOSSIL_TEST(c_test_ini_key_without_value) {
 // * Fossil Logic Test Pool
 // * * * * * * * * * * * * * * * * * * * * * * * *
 FOSSIL_TEST_GROUP(c_ini_tests) {    
-    FOSSIL_TEST_ADD(c_ini_fixture, c_test_ini_load_string);
-    FOSSIL_TEST_ADD(c_ini_fixture, c_test_ini_set_and_get);
-    FOSSIL_TEST_ADD(c_ini_fixture, c_test_ini_save_and_load_file);
-    FOSSIL_TEST_ADD(c_ini_fixture, c_test_ini_multiple_sections_and_keys);
-    FOSSIL_TEST_ADD(c_ini_fixture, c_test_ini_trim_and_comments);
-    FOSSIL_TEST_ADD(c_ini_fixture, c_test_ini_update_existing_key);
-    FOSSIL_TEST_ADD(c_ini_fixture, c_test_ini_missing_section_or_key);
-    FOSSIL_TEST_ADD(c_ini_fixture, c_test_ini_empty_string);
-    FOSSIL_TEST_ADD(c_ini_fixture, c_test_ini_null_string);
-    FOSSIL_TEST_ADD(c_ini_fixture, c_test_ini_no_section);
-    FOSSIL_TEST_ADD(c_ini_fixture, c_test_ini_duplicate_keys);
-    FOSSIL_TEST_ADD(c_ini_fixture, c_test_ini_long_key_and_value);
-    FOSSIL_TEST_ADD(c_ini_fixture, c_test_ini_nested_sections_like_names);
-    FOSSIL_TEST_ADD(c_ini_fixture, c_test_ini_multiline_value);
-    FOSSIL_TEST_ADD(c_ini_fixture, c_test_ini_special_characters);
-    FOSSIL_TEST_ADD(c_ini_fixture, c_test_ini_section_and_key_whitespace);
-    FOSSIL_TEST_ADD(c_ini_fixture, c_test_ini_key_without_value);
+    FOSSIL_ADD_TEST(c_ini_fixture, c_test_ini_load_string);
+    FOSSIL_ADD_TEST(c_ini_fixture, c_test_ini_set_and_get);
+    FOSSIL_ADD_TEST(c_ini_fixture, c_test_ini_save_and_load_file);
+    FOSSIL_ADD_TEST(c_ini_fixture, c_test_ini_multiple_sections_and_keys);
+    FOSSIL_ADD_TEST(c_ini_fixture, c_test_ini_trim_and_comments);
+    FOSSIL_ADD_TEST(c_ini_fixture, c_test_ini_update_existing_key);
+    FOSSIL_ADD_TEST(c_ini_fixture, c_test_ini_missing_section_or_key);
+    FOSSIL_ADD_TEST(c_ini_fixture, c_test_ini_empty_string);
+    FOSSIL_ADD_TEST(c_ini_fixture, c_test_ini_null_string);
+    FOSSIL_ADD_TEST(c_ini_fixture, c_test_ini_no_section);
+    FOSSIL_ADD_TEST(c_ini_fixture, c_test_ini_duplicate_keys);
+    FOSSIL_ADD_TEST(c_ini_fixture, c_test_ini_long_key_and_value);
+    FOSSIL_ADD_TEST(c_ini_fixture, c_test_ini_nested_sections_like_names);
+    FOSSIL_ADD_TEST(c_ini_fixture, c_test_ini_multiline_value);
+    FOSSIL_ADD_TEST(c_ini_fixture, c_test_ini_special_characters);
+    FOSSIL_ADD_TEST(c_ini_fixture, c_test_ini_section_and_key_whitespace);
+    FOSSIL_ADD_TEST(c_ini_fixture, c_test_ini_key_without_value);
 
-    FOSSIL_TEST_REGISTER(c_ini_fixture);
+    FOSSIL_ADD_SUITE(c_ini_fixture);
 } // end of tests

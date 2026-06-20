@@ -144,17 +144,17 @@ FOSSIL_TEST(cpp_test_xml_type_name) {
 // * Fossil Logic Test Pool
 // * * * * * * * * * * * * * * * * * * * * * * * *
 FOSSIL_TEST_GROUP(cpp_xml_tests) {
-    FOSSIL_TEST_ADD(cpp_xml_fixture, cpp_test_xml_new_element);
-    FOSSIL_TEST_ADD(cpp_xml_fixture, cpp_test_xml_new_text);
-    FOSSIL_TEST_ADD(cpp_xml_fixture, cpp_test_xml_new_comment);
-    FOSSIL_TEST_ADD(cpp_xml_fixture, cpp_test_xml_new_cdata);
-    FOSSIL_TEST_ADD(cpp_xml_fixture, cpp_test_xml_new_pi);
-    FOSSIL_TEST_ADD(cpp_xml_fixture, cpp_test_xml_set_and_get_attribute);
-    FOSSIL_TEST_ADD(cpp_xml_fixture, cpp_test_xml_set_attribute_replace);
-    FOSSIL_TEST_ADD(cpp_xml_fixture, cpp_test_xml_stringify_simple);
-    FOSSIL_TEST_ADD(cpp_xml_fixture, cpp_test_xml_stringify_pretty);
-    FOSSIL_TEST_ADD(cpp_xml_fixture, cpp_test_xml_parse_dummy);
-    FOSSIL_TEST_ADD(cpp_xml_fixture, cpp_test_xml_type_name);
+    FOSSIL_ADD_TEST(cpp_xml_fixture, cpp_test_xml_new_element);
+    FOSSIL_ADD_TEST(cpp_xml_fixture, cpp_test_xml_new_text);
+    FOSSIL_ADD_TEST(cpp_xml_fixture, cpp_test_xml_new_comment);
+    FOSSIL_ADD_TEST(cpp_xml_fixture, cpp_test_xml_new_cdata);
+    FOSSIL_ADD_TEST(cpp_xml_fixture, cpp_test_xml_new_pi);
+    FOSSIL_ADD_TEST(cpp_xml_fixture, cpp_test_xml_set_and_get_attribute);
+    FOSSIL_ADD_TEST(cpp_xml_fixture, cpp_test_xml_set_attribute_replace);
+    FOSSIL_ADD_TEST(cpp_xml_fixture, cpp_test_xml_stringify_simple);
+    FOSSIL_ADD_TEST(cpp_xml_fixture, cpp_test_xml_stringify_pretty);
+    FOSSIL_ADD_TEST(cpp_xml_fixture, cpp_test_xml_parse_dummy);
+    FOSSIL_ADD_TEST(cpp_xml_fixture, cpp_test_xml_type_name);
 
-    FOSSIL_TEST_REGISTER(cpp_xml_fixture);
+    FOSSIL_ADD_SUITE(cpp_xml_fixture);
 } // end of tests

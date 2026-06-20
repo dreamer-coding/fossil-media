@@ -210,21 +210,21 @@ FOSSIL_TEST(c_test_parse_no_fields) {
 // * Fossil Logic Test Pool
 // * * * * * * * * * * * * * * * * * * * * * * * *
 FOSSIL_TEST_GROUP(c_csv_tests) {    
-    FOSSIL_TEST_ADD(c_csv_fixture, c_test_parse_simple_csv);
-    FOSSIL_TEST_ADD(c_csv_fixture, c_test_parse_quoted_fields);
-    FOSSIL_TEST_ADD(c_csv_fixture, c_test_parse_empty_fields);
-    FOSSIL_TEST_ADD(c_csv_fixture, c_test_stringify_roundtrip);
-    FOSSIL_TEST_ADD(c_csv_fixture, c_test_append_row);
-    FOSSIL_TEST_ADD(c_csv_fixture, c_test_parse_invalid_input);
-    FOSSIL_TEST_ADD(c_csv_fixture, c_test_parse_single_row);
-    FOSSIL_TEST_ADD(c_csv_fixture, c_test_parse_trailing_newline);
-    FOSSIL_TEST_ADD(c_csv_fixture, c_test_parse_custom_delimiter);
-    FOSSIL_TEST_ADD(c_csv_fixture, c_test_stringify_empty_doc);
-    FOSSIL_TEST_ADD(c_csv_fixture, c_test_parse_only_newlines);
-    FOSSIL_TEST_ADD(c_csv_fixture, c_test_parse_only_delimiters);
-    FOSSIL_TEST_ADD(c_csv_fixture, c_test_parse_escaped_quotes);
-    FOSSIL_TEST_ADD(c_csv_fixture, c_test_parse_long_field);
-    FOSSIL_TEST_ADD(c_csv_fixture, c_test_parse_no_fields);
+    FOSSIL_ADD_TEST(c_csv_fixture, c_test_parse_simple_csv);
+    FOSSIL_ADD_TEST(c_csv_fixture, c_test_parse_quoted_fields);
+    FOSSIL_ADD_TEST(c_csv_fixture, c_test_parse_empty_fields);
+    FOSSIL_ADD_TEST(c_csv_fixture, c_test_stringify_roundtrip);
+    FOSSIL_ADD_TEST(c_csv_fixture, c_test_append_row);
+    FOSSIL_ADD_TEST(c_csv_fixture, c_test_parse_invalid_input);
+    FOSSIL_ADD_TEST(c_csv_fixture, c_test_parse_single_row);
+    FOSSIL_ADD_TEST(c_csv_fixture, c_test_parse_trailing_newline);
+    FOSSIL_ADD_TEST(c_csv_fixture, c_test_parse_custom_delimiter);
+    FOSSIL_ADD_TEST(c_csv_fixture, c_test_stringify_empty_doc);
+    FOSSIL_ADD_TEST(c_csv_fixture, c_test_parse_only_newlines);
+    FOSSIL_ADD_TEST(c_csv_fixture, c_test_parse_only_delimiters);
+    FOSSIL_ADD_TEST(c_csv_fixture, c_test_parse_escaped_quotes);
+    FOSSIL_ADD_TEST(c_csv_fixture, c_test_parse_long_field);
+    FOSSIL_ADD_TEST(c_csv_fixture, c_test_parse_no_fields);
 
-    FOSSIL_TEST_REGISTER(c_csv_fixture);
+    FOSSIL_ADD_SUITE(c_csv_fixture);
 } // end of tests

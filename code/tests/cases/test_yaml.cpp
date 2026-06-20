@@ -224,21 +224,21 @@ FOSSIL_TEST(cpp_test_yaml_get_nested_value) {
 // * Fossil Logic Test Pool
 // * * * * * * * * * * * * * * * * * * * * * * * *
 FOSSIL_TEST_GROUP(cpp_yaml_tests) {
-    FOSSIL_TEST_ADD(cpp_yaml_fixture, cpp_test_yaml_construct_and_get);
-    FOSSIL_TEST_ADD(cpp_yaml_fixture, cpp_test_yaml_construct_invalid);
-    FOSSIL_TEST_ADD(cpp_yaml_fixture, cpp_test_yaml_move_constructor);
-    FOSSIL_TEST_ADD(cpp_yaml_fixture, cpp_test_yaml_move_assignment);
-    FOSSIL_TEST_ADD(cpp_yaml_fixture, cpp_test_yaml_parse_nested);
-    FOSSIL_TEST_ADD(cpp_yaml_fixture, cpp_test_yaml_parse_trailing_spaces);
-    FOSSIL_TEST_ADD(cpp_yaml_fixture, cpp_test_yaml_parse_multiple_indents);
-    FOSSIL_TEST_ADD(cpp_yaml_fixture, cpp_test_yaml_print_output);
-    FOSSIL_TEST_ADD(cpp_yaml_fixture, cpp_test_yaml_parse_only_spaces);
-    FOSSIL_TEST_ADD(cpp_yaml_fixture, cpp_test_yaml_parse_no_colon);
-    FOSSIL_TEST_ADD(cpp_yaml_fixture, cpp_test_yaml_parse_colon_at_end);
-    FOSSIL_TEST_ADD(cpp_yaml_fixture, cpp_test_yaml_parse_duplicate_keys);
-    FOSSIL_TEST_ADD(cpp_yaml_fixture, cpp_test_yaml_parse_long_key_and_value);
-    FOSSIL_TEST_ADD(cpp_yaml_fixture, cpp_test_yaml_parse_tabs_and_spaces_indent);
-    FOSSIL_TEST_ADD(cpp_yaml_fixture, cpp_test_yaml_get_nested_value);
+    FOSSIL_ADD_TEST(cpp_yaml_fixture, cpp_test_yaml_construct_and_get);
+    FOSSIL_ADD_TEST(cpp_yaml_fixture, cpp_test_yaml_construct_invalid);
+    FOSSIL_ADD_TEST(cpp_yaml_fixture, cpp_test_yaml_move_constructor);
+    FOSSIL_ADD_TEST(cpp_yaml_fixture, cpp_test_yaml_move_assignment);
+    FOSSIL_ADD_TEST(cpp_yaml_fixture, cpp_test_yaml_parse_nested);
+    FOSSIL_ADD_TEST(cpp_yaml_fixture, cpp_test_yaml_parse_trailing_spaces);
+    FOSSIL_ADD_TEST(cpp_yaml_fixture, cpp_test_yaml_parse_multiple_indents);
+    FOSSIL_ADD_TEST(cpp_yaml_fixture, cpp_test_yaml_print_output);
+    FOSSIL_ADD_TEST(cpp_yaml_fixture, cpp_test_yaml_parse_only_spaces);
+    FOSSIL_ADD_TEST(cpp_yaml_fixture, cpp_test_yaml_parse_no_colon);
+    FOSSIL_ADD_TEST(cpp_yaml_fixture, cpp_test_yaml_parse_colon_at_end);
+    FOSSIL_ADD_TEST(cpp_yaml_fixture, cpp_test_yaml_parse_duplicate_keys);
+    FOSSIL_ADD_TEST(cpp_yaml_fixture, cpp_test_yaml_parse_long_key_and_value);
+    FOSSIL_ADD_TEST(cpp_yaml_fixture, cpp_test_yaml_parse_tabs_and_spaces_indent);
+    FOSSIL_ADD_TEST(cpp_yaml_fixture, cpp_test_yaml_get_nested_value);
 
-    FOSSIL_TEST_REGISTER(cpp_yaml_fixture);
+    FOSSIL_ADD_SUITE(cpp_yaml_fixture);
 } // end of tests

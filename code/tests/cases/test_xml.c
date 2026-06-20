@@ -170,18 +170,18 @@ FOSSIL_TEST(c_test_xml_type_name) {
 // * Fossil Logic Test Pool
 // * * * * * * * * * * * * * * * * * * * * * * * *
 FOSSIL_TEST_GROUP(c_xml_tests) {
-    FOSSIL_TEST_ADD(c_xml_fixture, c_test_xml_new_element);
-    FOSSIL_TEST_ADD(c_xml_fixture, c_test_xml_new_text);
-    FOSSIL_TEST_ADD(c_xml_fixture, c_test_xml_new_comment);
-    FOSSIL_TEST_ADD(c_xml_fixture, c_test_xml_new_cdata);
-    FOSSIL_TEST_ADD(c_xml_fixture, c_test_xml_new_pi);
-    FOSSIL_TEST_ADD(c_xml_fixture, c_test_xml_append_child_and_first_child);
-    FOSSIL_TEST_ADD(c_xml_fixture, c_test_xml_set_and_get_attribute);
-    FOSSIL_TEST_ADD(c_xml_fixture, c_test_xml_set_attribute_replace);
-    FOSSIL_TEST_ADD(c_xml_fixture, c_test_xml_stringify_simple);
-    FOSSIL_TEST_ADD(c_xml_fixture, c_test_xml_stringify_pretty);
-    FOSSIL_TEST_ADD(c_xml_fixture, c_test_xml_parse_dummy);
-    FOSSIL_TEST_ADD(c_xml_fixture, c_test_xml_type_name);
+    FOSSIL_ADD_TEST(c_xml_fixture, c_test_xml_new_element);
+    FOSSIL_ADD_TEST(c_xml_fixture, c_test_xml_new_text);
+    FOSSIL_ADD_TEST(c_xml_fixture, c_test_xml_new_comment);
+    FOSSIL_ADD_TEST(c_xml_fixture, c_test_xml_new_cdata);
+    FOSSIL_ADD_TEST(c_xml_fixture, c_test_xml_new_pi);
+    FOSSIL_ADD_TEST(c_xml_fixture, c_test_xml_append_child_and_first_child);
+    FOSSIL_ADD_TEST(c_xml_fixture, c_test_xml_set_and_get_attribute);
+    FOSSIL_ADD_TEST(c_xml_fixture, c_test_xml_set_attribute_replace);
+    FOSSIL_ADD_TEST(c_xml_fixture, c_test_xml_stringify_simple);
+    FOSSIL_ADD_TEST(c_xml_fixture, c_test_xml_stringify_pretty);
+    FOSSIL_ADD_TEST(c_xml_fixture, c_test_xml_parse_dummy);
+    FOSSIL_ADD_TEST(c_xml_fixture, c_test_xml_type_name);
 
-    FOSSIL_TEST_REGISTER(c_xml_fixture);
+    FOSSIL_ADD_SUITE(c_xml_fixture);
 } // end of tests

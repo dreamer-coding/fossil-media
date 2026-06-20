@@ -201,18 +201,18 @@ FOSSIL_TEST(cpp_test_md_parse_long_input) {
 // * Fossil Logic Test Pool
 // * * * * * * * * * * * * * * * * * * * * * * * *
 FOSSIL_TEST_GROUP(cpp_markdown_tests) {
-    FOSSIL_TEST_ADD(cpp_markdown_fixture, cpp_test_md_parse_and_serialize);
-    FOSSIL_TEST_ADD(cpp_markdown_fixture, cpp_test_md_parse_headings);
-    FOSSIL_TEST_ADD(cpp_markdown_fixture, cpp_test_md_parse_list_items);
-    FOSSIL_TEST_ADD(cpp_markdown_fixture, cpp_test_md_parse_code_block);
-    FOSSIL_TEST_ADD(cpp_markdown_fixture, cpp_test_md_parse_blockquote);
-    FOSSIL_TEST_ADD(cpp_markdown_fixture, cpp_test_md_parse_empty_input);
-    FOSSIL_TEST_ADD(cpp_markdown_fixture, cpp_test_md_parse_multiple_blank_lines);
-    FOSSIL_TEST_ADD(cpp_markdown_fixture, cpp_test_md_parse_malformed_heading);
-    FOSSIL_TEST_ADD(cpp_markdown_fixture, cpp_test_md_parse_nested_blockquote);
-    FOSSIL_TEST_ADD(cpp_markdown_fixture, cpp_test_md_parse_code_block_no_language);
-    FOSSIL_TEST_ADD(cpp_markdown_fixture, cpp_test_md_parse_unclosed_code_block);
-    FOSSIL_TEST_ADD(cpp_markdown_fixture, cpp_test_md_parse_long_input);
+    FOSSIL_ADD_TEST(cpp_markdown_fixture, cpp_test_md_parse_and_serialize);
+    FOSSIL_ADD_TEST(cpp_markdown_fixture, cpp_test_md_parse_headings);
+    FOSSIL_ADD_TEST(cpp_markdown_fixture, cpp_test_md_parse_list_items);
+    FOSSIL_ADD_TEST(cpp_markdown_fixture, cpp_test_md_parse_code_block);
+    FOSSIL_ADD_TEST(cpp_markdown_fixture, cpp_test_md_parse_blockquote);
+    FOSSIL_ADD_TEST(cpp_markdown_fixture, cpp_test_md_parse_empty_input);
+    FOSSIL_ADD_TEST(cpp_markdown_fixture, cpp_test_md_parse_multiple_blank_lines);
+    FOSSIL_ADD_TEST(cpp_markdown_fixture, cpp_test_md_parse_malformed_heading);
+    FOSSIL_ADD_TEST(cpp_markdown_fixture, cpp_test_md_parse_nested_blockquote);
+    FOSSIL_ADD_TEST(cpp_markdown_fixture, cpp_test_md_parse_code_block_no_language);
+    FOSSIL_ADD_TEST(cpp_markdown_fixture, cpp_test_md_parse_unclosed_code_block);
+    FOSSIL_ADD_TEST(cpp_markdown_fixture, cpp_test_md_parse_long_input);
 
-    FOSSIL_TEST_REGISTER(cpp_markdown_fixture);
+    FOSSIL_ADD_SUITE(cpp_markdown_fixture);
 } // end of tests

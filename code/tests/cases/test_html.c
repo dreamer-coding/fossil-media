@@ -471,26 +471,26 @@ FOSSIL_TEST(c_test_html_complete_document) {
 // * Fossil Logic Test Pool
 // * * * * * * * * * * * * * * * * * * * * * * * *
 FOSSIL_TEST_GROUP(c_html_tests) {
-    FOSSIL_TEST_ADD(c_html_fixture, c_test_html_load_string_and_root);
-    FOSSIL_TEST_ADD(c_html_fixture, c_test_html_find_by_tag);
-    FOSSIL_TEST_ADD(c_html_fixture, c_test_html_get_and_set_attr);
-    FOSSIL_TEST_ADD(c_html_fixture, c_test_html_node_text);
-    FOSSIL_TEST_ADD(c_html_fixture, c_test_html_serialize_roundtrip);
-    FOSSIL_TEST_ADD(c_html_fixture, c_test_html_empty_string);
-    FOSSIL_TEST_ADD(c_html_fixture, c_test_html_self_closing_tag);
-    FOSSIL_TEST_ADD(c_html_fixture, c_test_html_comment_node);
-    FOSSIL_TEST_ADD(c_html_fixture, c_test_html_cdata_node);
-    FOSSIL_TEST_ADD(c_html_fixture, c_test_html_processing_instruction);
-    FOSSIL_TEST_ADD(c_html_fixture, c_test_html_multiple_attributes);
-    FOSSIL_TEST_ADD(c_html_fixture, c_test_html_nested_elements);
-    FOSSIL_TEST_ADD(c_html_fixture, c_test_html_unclosed_tag);
-    FOSSIL_TEST_ADD(c_html_fixture, c_test_html_attribute_no_quotes);
-    FOSSIL_TEST_ADD(c_html_fixture, c_test_html_multiple_comments);
-    FOSSIL_TEST_ADD(c_html_fixture, c_test_html_empty_tag);
-    FOSSIL_TEST_ADD(c_html_fixture, c_test_html_large_input_timeout);
-    FOSSIL_TEST_ADD(c_html_fixture, c_test_html_tag_with_single_quotes);
-    FOSSIL_TEST_ADD(c_html_fixture, c_test_html_text_outside_tags);
-    FOSSIL_TEST_ADD(c_html_fixture, c_test_html_complete_document);
+    FOSSIL_ADD_TEST(c_html_fixture, c_test_html_load_string_and_root);
+    FOSSIL_ADD_TEST(c_html_fixture, c_test_html_find_by_tag);
+    FOSSIL_ADD_TEST(c_html_fixture, c_test_html_get_and_set_attr);
+    FOSSIL_ADD_TEST(c_html_fixture, c_test_html_node_text);
+    FOSSIL_ADD_TEST(c_html_fixture, c_test_html_serialize_roundtrip);
+    FOSSIL_ADD_TEST(c_html_fixture, c_test_html_empty_string);
+    FOSSIL_ADD_TEST(c_html_fixture, c_test_html_self_closing_tag);
+    FOSSIL_ADD_TEST(c_html_fixture, c_test_html_comment_node);
+    FOSSIL_ADD_TEST(c_html_fixture, c_test_html_cdata_node);
+    FOSSIL_ADD_TEST(c_html_fixture, c_test_html_processing_instruction);
+    FOSSIL_ADD_TEST(c_html_fixture, c_test_html_multiple_attributes);
+    FOSSIL_ADD_TEST(c_html_fixture, c_test_html_nested_elements);
+    FOSSIL_ADD_TEST(c_html_fixture, c_test_html_unclosed_tag);
+    FOSSIL_ADD_TEST(c_html_fixture, c_test_html_attribute_no_quotes);
+    FOSSIL_ADD_TEST(c_html_fixture, c_test_html_multiple_comments);
+    FOSSIL_ADD_TEST(c_html_fixture, c_test_html_empty_tag);
+    FOSSIL_ADD_TEST(c_html_fixture, c_test_html_large_input_timeout);
+    FOSSIL_ADD_TEST(c_html_fixture, c_test_html_tag_with_single_quotes);
+    FOSSIL_ADD_TEST(c_html_fixture, c_test_html_text_outside_tags);
+    FOSSIL_ADD_TEST(c_html_fixture, c_test_html_complete_document);
 
-    FOSSIL_TEST_REGISTER(c_html_fixture);
+    FOSSIL_ADD_SUITE(c_html_fixture);
 }

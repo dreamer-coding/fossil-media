@@ -275,28 +275,28 @@ FOSSIL_TEST(cpp_ini_key_without_value) {
 }
 
 FOSSIL_TEST_GROUP(cpp_ini_tests) {
-    FOSSIL_TEST_ADD(cpp_ini_fixture, cpp_ini_default_ctor);
-    FOSSIL_TEST_ADD(cpp_ini_fixture, cpp_ini_load_string_ctor);
-    FOSSIL_TEST_ADD(cpp_ini_fixture, cpp_ini_move_ctor);
-    FOSSIL_TEST_ADD(cpp_ini_fixture, cpp_ini_move_assign);
-    FOSSIL_TEST_ADD(cpp_ini_fixture, cpp_ini_set_and_get);
-    FOSSIL_TEST_ADD(cpp_ini_fixture, cpp_ini_save_and_load_file);
-    FOSSIL_TEST_ADD(cpp_ini_fixture, cpp_ini_load_string);
-    FOSSIL_TEST_ADD(cpp_ini_fixture, cpp_ini_get_missing);
-    FOSSIL_TEST_ADD(cpp_ini_fixture, cpp_ini_throw_on_bad_file);
-    FOSSIL_TEST_ADD(cpp_ini_fixture, cpp_ini_multiple_sections_and_keys);
-    FOSSIL_TEST_ADD(cpp_ini_fixture, cpp_ini_update_existing_key);
-    FOSSIL_TEST_ADD(cpp_ini_fixture, cpp_ini_missing_section_or_key);
-    FOSSIL_TEST_ADD(cpp_ini_fixture, cpp_ini_empty_string);
-    FOSSIL_TEST_ADD(cpp_ini_fixture, cpp_ini_null_string);
-    FOSSIL_TEST_ADD(cpp_ini_fixture, cpp_ini_no_section);
-    FOSSIL_TEST_ADD(cpp_ini_fixture, cpp_ini_duplicate_keys);
-    FOSSIL_TEST_ADD(cpp_ini_fixture, cpp_ini_long_key_and_value);
-    FOSSIL_TEST_ADD(cpp_ini_fixture, cpp_ini_nested_sections_like_names);
-    FOSSIL_TEST_ADD(cpp_ini_fixture, cpp_ini_multiline_value);
-    FOSSIL_TEST_ADD(cpp_ini_fixture, cpp_ini_special_characters);
-    FOSSIL_TEST_ADD(cpp_ini_fixture, cpp_ini_section_and_key_whitespace);
-    FOSSIL_TEST_ADD(cpp_ini_fixture, cpp_ini_key_without_value);
+    FOSSIL_ADD_TEST(cpp_ini_fixture, cpp_ini_default_ctor);
+    FOSSIL_ADD_TEST(cpp_ini_fixture, cpp_ini_load_string_ctor);
+    FOSSIL_ADD_TEST(cpp_ini_fixture, cpp_ini_move_ctor);
+    FOSSIL_ADD_TEST(cpp_ini_fixture, cpp_ini_move_assign);
+    FOSSIL_ADD_TEST(cpp_ini_fixture, cpp_ini_set_and_get);
+    FOSSIL_ADD_TEST(cpp_ini_fixture, cpp_ini_save_and_load_file);
+    FOSSIL_ADD_TEST(cpp_ini_fixture, cpp_ini_load_string);
+    FOSSIL_ADD_TEST(cpp_ini_fixture, cpp_ini_get_missing);
+    FOSSIL_ADD_TEST(cpp_ini_fixture, cpp_ini_throw_on_bad_file);
+    FOSSIL_ADD_TEST(cpp_ini_fixture, cpp_ini_multiple_sections_and_keys);
+    FOSSIL_ADD_TEST(cpp_ini_fixture, cpp_ini_update_existing_key);
+    FOSSIL_ADD_TEST(cpp_ini_fixture, cpp_ini_missing_section_or_key);
+    FOSSIL_ADD_TEST(cpp_ini_fixture, cpp_ini_empty_string);
+    FOSSIL_ADD_TEST(cpp_ini_fixture, cpp_ini_null_string);
+    FOSSIL_ADD_TEST(cpp_ini_fixture, cpp_ini_no_section);
+    FOSSIL_ADD_TEST(cpp_ini_fixture, cpp_ini_duplicate_keys);
+    FOSSIL_ADD_TEST(cpp_ini_fixture, cpp_ini_long_key_and_value);
+    FOSSIL_ADD_TEST(cpp_ini_fixture, cpp_ini_nested_sections_like_names);
+    FOSSIL_ADD_TEST(cpp_ini_fixture, cpp_ini_multiline_value);
+    FOSSIL_ADD_TEST(cpp_ini_fixture, cpp_ini_special_characters);
+    FOSSIL_ADD_TEST(cpp_ini_fixture, cpp_ini_section_and_key_whitespace);
+    FOSSIL_ADD_TEST(cpp_ini_fixture, cpp_ini_key_without_value);
 
-    FOSSIL_TEST_REGISTER(cpp_ini_fixture);
+    FOSSIL_ADD_SUITE(cpp_ini_fixture);
 } // end of tests

@@ -136,17 +136,17 @@ FOSSIL_TEST(cpp_test_text_split_empty_string) {
 // * Fossil Logic Test Pool
 // * * * * * * * * * * * * * * * * * * * * * * * *
 FOSSIL_TEST_GROUP(cpp_text_tests) {
-    FOSSIL_TEST_ADD(cpp_text_fixture, cpp_test_text_trim_no_spaces);
-    FOSSIL_TEST_ADD(cpp_text_fixture, cpp_test_text_tolower_basic);
-    FOSSIL_TEST_ADD(cpp_text_fixture, cpp_test_text_toupper_basic);
-    FOSSIL_TEST_ADD(cpp_text_fixture, cpp_test_text_replace_basic);
-    FOSSIL_TEST_ADD(cpp_text_fixture, cpp_test_text_replace_no_match);
-    FOSSIL_TEST_ADD(cpp_text_fixture, cpp_test_text_replace_buffer_too_small);
-    FOSSIL_TEST_ADD(cpp_text_fixture, cpp_test_text_find_basic);
-    FOSSIL_TEST_ADD(cpp_text_fixture, cpp_test_text_find_not_found);
-    FOSSIL_TEST_ADD(cpp_text_fixture, cpp_test_text_split_basic);
-    FOSSIL_TEST_ADD(cpp_text_fixture, cpp_test_text_split_limit_tokens);
-    FOSSIL_TEST_ADD(cpp_text_fixture, cpp_test_text_split_empty_string);
+    FOSSIL_ADD_TEST(cpp_text_fixture, cpp_test_text_trim_no_spaces);
+    FOSSIL_ADD_TEST(cpp_text_fixture, cpp_test_text_tolower_basic);
+    FOSSIL_ADD_TEST(cpp_text_fixture, cpp_test_text_toupper_basic);
+    FOSSIL_ADD_TEST(cpp_text_fixture, cpp_test_text_replace_basic);
+    FOSSIL_ADD_TEST(cpp_text_fixture, cpp_test_text_replace_no_match);
+    FOSSIL_ADD_TEST(cpp_text_fixture, cpp_test_text_replace_buffer_too_small);
+    FOSSIL_ADD_TEST(cpp_text_fixture, cpp_test_text_find_basic);
+    FOSSIL_ADD_TEST(cpp_text_fixture, cpp_test_text_find_not_found);
+    FOSSIL_ADD_TEST(cpp_text_fixture, cpp_test_text_split_basic);
+    FOSSIL_ADD_TEST(cpp_text_fixture, cpp_test_text_split_limit_tokens);
+    FOSSIL_ADD_TEST(cpp_text_fixture, cpp_test_text_split_empty_string);
 
-    FOSSIL_TEST_REGISTER(cpp_text_fixture);
+    FOSSIL_ADD_SUITE(cpp_text_fixture);
 } // end of tests

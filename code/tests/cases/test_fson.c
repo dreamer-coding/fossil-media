@@ -326,23 +326,23 @@ FOSSIL_TEST(c_test_fson_complex_nested) {
 // * Fossil Logic Test Pool
 // * * * * * * * * * * * * * * * * * * * * * * * *
 FOSSIL_TEST_GROUP(c_fson_tests) {
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_null);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_bool);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_number);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_string);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_array);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_object);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_stringify_roundtrip);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_clone_and_equals);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_equals_not_equal);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_empty_array);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_invalid_json);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_large_number);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_special_char_string);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_datetime);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_duration);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_parse_invalid_duration);
-    FOSSIL_TEST_ADD(c_fson_fixture, c_test_fson_complex_nested);
+    FOSSIL_ADD_TEST(c_fson_fixture, c_test_fson_parse_null);
+    FOSSIL_ADD_TEST(c_fson_fixture, c_test_fson_parse_bool);
+    FOSSIL_ADD_TEST(c_fson_fixture, c_test_fson_parse_number);
+    FOSSIL_ADD_TEST(c_fson_fixture, c_test_fson_parse_string);
+    FOSSIL_ADD_TEST(c_fson_fixture, c_test_fson_parse_array);
+    FOSSIL_ADD_TEST(c_fson_fixture, c_test_fson_parse_object);
+    FOSSIL_ADD_TEST(c_fson_fixture, c_test_fson_stringify_roundtrip);
+    FOSSIL_ADD_TEST(c_fson_fixture, c_test_fson_clone_and_equals);
+    FOSSIL_ADD_TEST(c_fson_fixture, c_test_fson_equals_not_equal);
+    FOSSIL_ADD_TEST(c_fson_fixture, c_test_fson_parse_empty_array);
+    FOSSIL_ADD_TEST(c_fson_fixture, c_test_fson_parse_invalid_json);
+    FOSSIL_ADD_TEST(c_fson_fixture, c_test_fson_parse_large_number);
+    FOSSIL_ADD_TEST(c_fson_fixture, c_test_fson_parse_special_char_string);
+    FOSSIL_ADD_TEST(c_fson_fixture, c_test_fson_parse_datetime);
+    FOSSIL_ADD_TEST(c_fson_fixture, c_test_fson_parse_duration);
+    FOSSIL_ADD_TEST(c_fson_fixture, c_test_fson_parse_invalid_duration);
+    FOSSIL_ADD_TEST(c_fson_fixture, c_test_fson_complex_nested);
 
-    FOSSIL_TEST_REGISTER(c_fson_fixture);
+    FOSSIL_ADD_SUITE(c_fson_fixture);
 } // end of tests

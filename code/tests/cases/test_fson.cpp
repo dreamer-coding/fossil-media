@@ -164,12 +164,12 @@ FOSSIL_TEST(cpp_test_fson_cpp_edge_cases) {
 // * Fossil Logic Test Pool
 // * * * * * * * * * * * * * * * * * * * * * * * *
 FOSSIL_TEST_GROUP(cpp_fson_tests) {
-    FOSSIL_TEST_ADD(cpp_fson_fixture, cpp_test_fson_cpp_array_append_get_size);
-    FOSSIL_TEST_ADD(cpp_fson_fixture, cpp_test_fson_cpp_type_name_and_helpers);
-    FOSSIL_TEST_ADD(cpp_fson_fixture, cpp_test_fson_cpp_array_object_reserve);
-    FOSSIL_TEST_ADD(cpp_fson_fixture, cpp_test_fson_cpp_clone_and_equals);
-    FOSSIL_TEST_ADD(cpp_fson_fixture, cpp_test_fson_cpp_number_getters);
-    FOSSIL_TEST_ADD(cpp_fson_fixture, cpp_test_fson_cpp_edge_cases);
+    FOSSIL_ADD_TEST(cpp_fson_fixture, cpp_test_fson_cpp_array_append_get_size);
+    FOSSIL_ADD_TEST(cpp_fson_fixture, cpp_test_fson_cpp_type_name_and_helpers);
+    FOSSIL_ADD_TEST(cpp_fson_fixture, cpp_test_fson_cpp_array_object_reserve);
+    FOSSIL_ADD_TEST(cpp_fson_fixture, cpp_test_fson_cpp_clone_and_equals);
+    FOSSIL_ADD_TEST(cpp_fson_fixture, cpp_test_fson_cpp_number_getters);
+    FOSSIL_ADD_TEST(cpp_fson_fixture, cpp_test_fson_cpp_edge_cases);
 
-    FOSSIL_TEST_REGISTER(cpp_fson_fixture);
+    FOSSIL_ADD_SUITE(cpp_fson_fixture);
 }

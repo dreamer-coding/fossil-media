@@ -101,13 +101,13 @@ FOSSIL_TEST(cpp_test_json_stringify_roundtrip) {
 // * * * * * * * * * * * * * * * * * * * * * * * *
 FOSSIL_TEST_GROUP(cpp_json_tests) {    
     // C++ Wrapper Tests
-    FOSSIL_TEST_ADD(cpp_json_fixture, cpp_test_json_parse_null);
-    FOSSIL_TEST_ADD(cpp_json_fixture, cpp_test_json_parse_bool);
-    FOSSIL_TEST_ADD(cpp_json_fixture, cpp_test_json_parse_number);
-    FOSSIL_TEST_ADD(cpp_json_fixture, cpp_test_json_parse_string);
-    FOSSIL_TEST_ADD(cpp_json_fixture, cpp_test_json_parse_array);
-    FOSSIL_TEST_ADD(cpp_json_fixture, cpp_test_json_parse_object);
-    FOSSIL_TEST_ADD(cpp_json_fixture, cpp_test_json_stringify_roundtrip);
+    FOSSIL_ADD_TEST(cpp_json_fixture, cpp_test_json_parse_null);
+    FOSSIL_ADD_TEST(cpp_json_fixture, cpp_test_json_parse_bool);
+    FOSSIL_ADD_TEST(cpp_json_fixture, cpp_test_json_parse_number);
+    FOSSIL_ADD_TEST(cpp_json_fixture, cpp_test_json_parse_string);
+    FOSSIL_ADD_TEST(cpp_json_fixture, cpp_test_json_parse_array);
+    FOSSIL_ADD_TEST(cpp_json_fixture, cpp_test_json_parse_object);
+    FOSSIL_ADD_TEST(cpp_json_fixture, cpp_test_json_stringify_roundtrip);
 
-    FOSSIL_TEST_REGISTER(cpp_json_fixture);
+    FOSSIL_ADD_SUITE(cpp_json_fixture);
 } // end of tests

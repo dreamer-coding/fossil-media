@@ -209,19 +209,19 @@ FOSSIL_TEST(c_test_yaml_get_nested_value) {
 // * Fossil Logic Test Pool
 // * * * * * * * * * * * * * * * * * * * * * * * *
 FOSSIL_TEST_GROUP(c_yaml_tests) {
-    FOSSIL_TEST_ADD(c_yaml_fixture, c_test_yaml_parse_simple);
-    FOSSIL_TEST_ADD(c_yaml_fixture, c_test_yaml_parse_with_indent);
-    FOSSIL_TEST_ADD(c_yaml_fixture, c_test_yaml_parse_empty_and_invalid);
-    FOSSIL_TEST_ADD(c_yaml_fixture, c_test_yaml_get_value);
-    FOSSIL_TEST_ADD(c_yaml_fixture, c_test_yaml_parse_nested);
-    FOSSIL_TEST_ADD(c_yaml_fixture, c_test_yaml_parse_multiple_indents);
-    FOSSIL_TEST_ADD(c_yaml_fixture, c_test_yaml_print_output);
-    FOSSIL_TEST_ADD(c_yaml_fixture, c_test_yaml_parse_only_spaces);
-    FOSSIL_TEST_ADD(c_yaml_fixture, c_test_yaml_parse_no_colon);
-    FOSSIL_TEST_ADD(c_yaml_fixture, c_test_yaml_parse_colon_at_end);
-    FOSSIL_TEST_ADD(c_yaml_fixture, c_test_yaml_parse_duplicate_keys);
-    FOSSIL_TEST_ADD(c_yaml_fixture, c_test_yaml_parse_long_key_and_value);
-    FOSSIL_TEST_ADD(c_yaml_fixture, c_test_yaml_get_nested_value);
+    FOSSIL_ADD_TEST(c_yaml_fixture, c_test_yaml_parse_simple);
+    FOSSIL_ADD_TEST(c_yaml_fixture, c_test_yaml_parse_with_indent);
+    FOSSIL_ADD_TEST(c_yaml_fixture, c_test_yaml_parse_empty_and_invalid);
+    FOSSIL_ADD_TEST(c_yaml_fixture, c_test_yaml_get_value);
+    FOSSIL_ADD_TEST(c_yaml_fixture, c_test_yaml_parse_nested);
+    FOSSIL_ADD_TEST(c_yaml_fixture, c_test_yaml_parse_multiple_indents);
+    FOSSIL_ADD_TEST(c_yaml_fixture, c_test_yaml_print_output);
+    FOSSIL_ADD_TEST(c_yaml_fixture, c_test_yaml_parse_only_spaces);
+    FOSSIL_ADD_TEST(c_yaml_fixture, c_test_yaml_parse_no_colon);
+    FOSSIL_ADD_TEST(c_yaml_fixture, c_test_yaml_parse_colon_at_end);
+    FOSSIL_ADD_TEST(c_yaml_fixture, c_test_yaml_parse_duplicate_keys);
+    FOSSIL_ADD_TEST(c_yaml_fixture, c_test_yaml_parse_long_key_and_value);
+    FOSSIL_ADD_TEST(c_yaml_fixture, c_test_yaml_get_nested_value);
 
-    FOSSIL_TEST_REGISTER(c_yaml_fixture);
+    FOSSIL_ADD_SUITE(c_yaml_fixture);
 } // end of tests
