@@ -43,7 +43,7 @@ Add the `fossil-media.wrap` file in your `subprojects` directory and include the
 ```ini
 [wrap-git]
 url = https://github.com/fossillogic/fossil-media.git
-revision = v0.1.1
+revision = v1.0.0
 
 [provide]
 dependency_names = fossil-media
